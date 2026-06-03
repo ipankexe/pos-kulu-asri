@@ -21,6 +21,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     // Laporan & Users
     Route::get('/reports', [\App\Http\Controllers\AdminController::class, 'reports'])->name('admin.reports');
     Route::get('/reports/export', [\App\Http\Controllers\AdminController::class, 'exportReports'])->name('admin.reports.export');
+    Route::get('/reports/pdf', [\App\Http\Controllers\AdminController::class, 'exportPdf'])->name('admin.reports.pdf');
     Route::post('/void/{id}', [\App\Http\Controllers\AdminController::class, 'voidTransaction'])->name('admin.void');
     Route::get('/void-logs', [\App\Http\Controllers\AdminController::class, 'voidLogs'])->name('admin.voids');
     Route::resource('users', \App\Http\Controllers\UserController::class)->except(['create', 'edit', 'show']);

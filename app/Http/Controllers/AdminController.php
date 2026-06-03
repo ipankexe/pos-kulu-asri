@@ -179,6 +179,18 @@ class AdminController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
+    public function exportPdf(\Illuminate\Http\Request $request)
+    {
+        $filter = $request->get('filter', 'all');
+        $customDate = $request->get('custom_date');
+        $query = Transaction::with('user')->where('status', 'paid')->orderBy('created_at', 'desc');
+        $query = $this->applyFilter($query, $filter, $customDate);
+        $transactions = $query->get();
+        
+        return view('admin.reports_pdf', compact('transactions', 'filter', 'customDate'));
+    }
+
+
     public function voidLogs(\Illuminate\Http\Request $request)
     {
         $filter = $request->get('filter', 'all');

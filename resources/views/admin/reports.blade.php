@@ -42,6 +42,9 @@
                 <a href="{{ route('admin.reports.export', ['filter' => $filter, 'custom_date' => $customDate ?? '']) }}" class="btn btn-success fw-bold rounded-pill px-4 shadow-sm">
                     <i class="bi bi-file-earmark-excel me-2"></i> Export Excel
                 </a>
+                <a href="{{ route('admin.reports.pdf', ['filter' => $filter, 'custom_date' => $customDate ?? '']) }}" target="_blank" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+                    <i class="bi bi-file-earmark-pdf me-2"></i> Export PDF
+                </a>
             </div>
         </div>
 
