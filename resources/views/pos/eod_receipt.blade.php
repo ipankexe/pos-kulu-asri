@@ -21,7 +21,7 @@
     <div class="header">
         <h2>RUMAH MAKAN KULU ASRI</h2>
         <p>Jl. Raya Kulu Asri No. 123</p>
-        <p>Telp: 0812-3456-7890</p>
+        <p>Telp: +62 856-4184-7054</p>
         <div class="line"></div>
         <h2 style="font-size: 14px;">LAPORAN SHIFT (END OF DAY)</h2>
     </div>

@@ -22,7 +22,7 @@
 <body onload="window.print()">
     <div class="text-center">
         <h2 style="margin:0;">KULU ASRI</h2>
-        <p style="margin:5px 0;">Jl.Singosari No.7 Kecamatan Kranganyar Kab.Pekalongan<br>Telp: 0812-3456-7890</p>
+        <p style="margin:5px 0;">Jl.Singosari No.7 Kecamatan Kranganyar Kab.Pekalongan<br>Telp: +62 856-4184-7054</p>
     </div>
 
     <div class="border-dashed">

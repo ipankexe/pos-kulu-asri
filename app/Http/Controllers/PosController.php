@@ -255,9 +255,28 @@ class PosController extends Controller
         return view('pos.kitchen_ticket', compact('transaction'));
     }
 
-    public function history()
+    public function history(Request $request)
     {
-        $transactions = Transaction::with('user', 'voidLog')->orderBy('created_at', 'desc')->paginate(20);
+        $query = Transaction::with('user', 'voidLog');
+
+        if ($request->filled('filter_type')) {
+            $type = $request->filter_type;
+            if ($type === 'date' && $request->filled('date')) {
+                $query->whereDate('created_at', $request->date);
+            } elseif ($type === 'month' && $request->filled('month')) {
+                $parts = explode('-', $request->month);
+                if (count($parts) === 2) {
+                    $query->whereYear('created_at', $parts[0])
+                          ->whereMonth('created_at', $parts[1]);
+                } else {
+                    $query->whereMonth('created_at', $request->month);
+                }
+            } elseif ($type === 'year' && $request->filled('year')) {
+                $query->whereYear('created_at', $request->year);
+            }
+        }
+
+        $transactions = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
         return view('pos.history', compact('transactions'));
     }
 

@@ -23,6 +23,45 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
+    <!-- Form Filter -->
+    <form method="GET" action="{{ route('pos.history') }}" class="row g-3 mb-4 align-items-end bg-white p-3 rounded-3 shadow-sm border-0 mx-0">
+        <div class="col-md-3">
+            <label for="filter_type" class="form-label fw-semibold text-muted">Urutkan Berdasarkan</label>
+            <select class="form-select" id="filter_type" name="filter_type" onchange="toggleFilterInputs()">
+                <option value="date" {{ request('filter_type', 'date') == 'date' ? 'selected' : '' }}>Tanggal</option>
+                <option value="month" {{ request('filter_type') == 'month' ? 'selected' : '' }}>Bulan</option>
+                <option value="year" {{ request('filter_type') == 'year' ? 'selected' : '' }}>Tahun</option>
+            </select>
+        </div>
+        
+        <div class="col-md-3" id="input_date_container">
+            <label for="filter_date" class="form-label fw-semibold text-muted">Pilih Tanggal</label>
+            <input type="date" class="form-control" id="filter_date" name="date" value="{{ request('date', request('filter_type') == 'date' ? date('Y-m-d') : date('Y-m-d')) }}">
+        </div>
+
+        <div class="col-md-3 d-none" id="input_month_container">
+            <label for="filter_month" class="form-label fw-semibold text-muted">Pilih Bulan</label>
+            <input type="month" class="form-control" id="filter_month" name="month" value="{{ request('month', date('Y-m')) }}">
+        </div>
+
+        <div class="col-md-3 d-none" id="input_year_container">
+            <label for="filter_year" class="form-label fw-semibold text-muted">Pilih Tahun</label>
+            <select class="form-select" id="filter_year" name="year">
+                @php
+                    $currentYear = date('Y');
+                @endphp
+                @for($y = $currentYear; $y >= $currentYear - 5; $y--)
+                    <option value="{{ $y }}" {{ request('year', $currentYear) == $y ? 'selected' : '' }}>{{ $y }}</option>
+                @endfor
+            </select>
+        </div>
+        
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-success flex-grow-1"><i class="bi bi-funnel"></i> Filter</button>
+            <a href="{{ route('pos.history') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> Reset</a>
+        </div>
+    </form>
+
     <div class="card shadow-sm border-0 rounded-3">
         <div class="card-body p-0">
             <table class="table table-hover mb-0">
@@ -90,6 +129,36 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    function toggleFilterInputs() {
+        const filterType = document.getElementById('filter_type').value;
+        const dateContainer = document.getElementById('input_date_container');
+        const monthContainer = document.getElementById('input_month_container');
+        const yearContainer = document.getElementById('input_year_container');
+        
+        dateContainer.classList.add('d-none');
+        monthContainer.classList.add('d-none');
+        yearContainer.classList.add('d-none');
+        
+        document.getElementById('filter_date').disabled = true;
+        document.getElementById('filter_month').disabled = true;
+        document.getElementById('filter_year').disabled = true;
+
+        if (filterType === 'date') {
+            dateContainer.classList.remove('d-none');
+            document.getElementById('filter_date').disabled = false;
+        } else if (filterType === 'month') {
+            monthContainer.classList.remove('d-none');
+            document.getElementById('filter_month').disabled = false;
+        } else if (filterType === 'year') {
+            yearContainer.classList.remove('d-none');
+            document.getElementById('filter_year').disabled = false;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleFilterInputs();
+    });
+
     function confirmVoid(id) {
         Swal.fire({
             title: 'Void Transaksi?',
