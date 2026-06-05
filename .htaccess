@@ -1,5 +1,12 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    # Prevent internal rewrite loop
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
     RewriteRule ^$ public/ [L]
-    RewriteRule (.*) public/$1 [L]
+    
+    # Rewrite all other requests to public folder
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^((?!public/).*)$ public/$1 [L]
 </IfModule>

@@ -102,7 +102,7 @@
                             <a href="{{ route('pos.receipt', $trx->id) }}" target="_blank" class="btn btn-sm btn-info text-white">
                                 <i class="bi bi-printer"></i> Struk
                             </a>
-                            <a href="{{ route('pos.kitchen_ticket', $trx->id) }}" target="_blank" class="btn btn-sm btn-secondary text-white">
+                            <a href="{{ route('pos.kitchen_ticket', [$trx->id, 'all' => 1]) }}" target="_blank" class="btn btn-sm btn-secondary text-white">
                                 <i class="bi bi-printer"></i> Dapur
                             </a>
                             @endif

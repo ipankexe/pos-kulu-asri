@@ -20,7 +20,7 @@
 
     <div class="header">
         <h2>RUMAH MAKAN KULU ASRI</h2>
-        <p>Jl. Raya Kulu Asri No. 123</p>
+        <p>Jl.Singosari No.7 Kecamatan Kranganyar Kab.Pekalongan</p>
         <p>Telp: +62 856-4184-7054</p>
         <div class="line"></div>
         <h2 style="font-size: 14px;">LAPORAN SHIFT (END OF DAY)</h2>

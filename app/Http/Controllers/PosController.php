@@ -97,6 +97,7 @@ class PosController extends Controller
 
             $existingDetails = $transaction->details->keyBy('product_id');
             $newTotal = 0;
+            $printItems = [];
 
             foreach ($cartItems as $productId => $item) {
                 $product = Product::where('id', $productId)->lockForUpdate()->first();
@@ -122,7 +123,9 @@ class PosController extends Controller
                     }
 
                     if ($diff != 0 || $existing->notes !== $item['notes']) {
-                        $existing->update(['qty' => $newQty, 'notes' => $item['notes']]);
+                        $existing->qty = $newQty;
+                        $existing->notes = $item['notes'];
+                        $existing->save();
                     }
                     $existingDetails->forget($productId);
                 } else {
@@ -130,13 +133,33 @@ class PosController extends Controller
                     $product->decrement('stock', $newQty);
                     StockLog::create(['product_id' => $productId, 'qty_out' => $newQty]);
                     
-                    TransactionDetail::create([
+                    $existing = TransactionDetail::create([
                         'transaction_id' => $transaction->id,
                         'product_id' => $productId,
                         'qty' => $newQty,
+                        'qty_printed' => 0,
                         'price' => $actualPrice, // Gunakan actual price
                         'notes' => $item['notes']
                     ]);
+                }
+
+                // Reset qty_printed if quantity was decreased
+                if ($existing->qty_printed > $existing->qty) {
+                    $existing->qty_printed = $existing->qty;
+                    $existing->save();
+                }
+
+                // Calculate unsent items for kitchen ticket
+                $qtyToPrint = $existing->qty - $existing->qty_printed;
+                if ($qtyToPrint > 0) {
+                    $printItems[] = [
+                        'product_id' => $productId,
+                        'qty' => $qtyToPrint,
+                        'notes' => $existing->notes
+                    ];
+                    
+                    $existing->qty_printed = $existing->qty;
+                    $existing->save();
                 }
             }
 
@@ -154,7 +177,11 @@ class PosController extends Controller
             $transaction->save();
 
             DB::commit();
-            return response()->json(['success' => true, 'transaction_id' => $transaction->id]);
+            return response()->json([
+                'success' => true, 
+                'transaction_id' => $transaction->id,
+                'print_items' => $printItems
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             $msg = $e->getMessage();
@@ -249,9 +276,42 @@ class PosController extends Controller
         return view('pos.receipt', compact('transaction'));
     }
 
-    public function printKitchenTicket($id)
+    public function printKitchenTicket(Request $request, $id)
     {
         $transaction = Transaction::with(['details.product', 'user'])->findOrFail($id);
+        
+        if ($request->has('items')) {
+            try {
+                $itemsRaw = $request->query('items');
+                $itemsDecoded = stripslashes($itemsRaw);
+                $printItems = json_decode($itemsDecoded, true);
+                if (is_array($printItems)) {
+                    $printItemsMap = collect($printItems)->keyBy('product_id');
+                    $detailsToPrint = collect();
+                    
+                    foreach ($transaction->details as $detail) {
+                        if ($printItemsMap->has($detail->product_id)) {
+                            $printItem = $printItemsMap->get($detail->product_id);
+                            $detail->qty_to_print = $printItem['qty'];
+                            if (isset($printItem['notes'])) {
+                                $detail->notes = $printItem['notes'];
+                            }
+                            $detailsToPrint->push($detail);
+                        }
+                    }
+                    $transaction->setRelation('details', $detailsToPrint);
+                }
+            } catch (\Exception $e) {
+                \Log::error("Kitchen ticket print error: " . $e->getMessage());
+            }
+        }
+        
+        if (!isset($detailsToPrint) || $detailsToPrint->isEmpty()) {
+            foreach ($transaction->details as $detail) {
+                $detail->qty_to_print = $detail->qty;
+            }
+        }
+        
         return view('pos.kitchen_ticket', compact('transaction'));
     }
 

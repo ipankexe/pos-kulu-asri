@@ -97,7 +97,7 @@
 
     <div class="header">
         <h1>RUMAH MAKAN KULU ASRI</h1>
-        <p>Jl. Raya Kulu Asri No. 123 | Telp: +62 856-4184-7054</p>
+        <p>Jl.Singosari No.7 Kecamatan Kranganyar Kab.Pekalongan | Telp: +62 856-4184-7054</p>
     </div>
 
     <div class="report-info">

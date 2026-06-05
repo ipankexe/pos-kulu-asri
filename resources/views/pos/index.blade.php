@@ -938,7 +938,11 @@
                     cancelButtonText: 'Tidak Perlu'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        printInIframe('/pos/kitchen-ticket/' + data.transaction_id);
+                        let printUrl = '/pos/kitchen-ticket/' + data.transaction_id;
+                        if (data.print_items && data.print_items.length > 0) {
+                            printUrl += '?items=' + encodeURIComponent(JSON.stringify(data.print_items));
+                        }
+                        printInIframe(printUrl);
                     }
                 });
             } else {

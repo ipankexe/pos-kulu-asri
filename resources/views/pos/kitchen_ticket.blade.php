@@ -39,7 +39,7 @@
     <table>
         @foreach($transaction->details as $detail)
         <tr style="border-bottom: 1px solid #ddd;">
-            <td class="qty-col">{{ $detail->qty }}x</td>
+            <td class="qty-col">{{ $detail->qty_to_print }}x</td>
             <td>
                 <span class="item-name">{{ $detail->product->name }}</span>
                 @if($detail->notes)
