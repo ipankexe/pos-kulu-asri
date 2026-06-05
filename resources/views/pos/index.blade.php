@@ -942,6 +942,9 @@
                         if (data.print_items && data.print_items.length > 0) {
                             printUrl += '?items=' + encodeURIComponent(JSON.stringify(data.print_items));
                         }
+                        if (data.is_additional) {
+                            printUrl += (printUrl.includes('?') ? '&' : '?') + 'additional=1';
+                        }
                         printInIframe(printUrl);
                     }
                 });

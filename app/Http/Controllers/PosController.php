@@ -41,6 +41,7 @@ class PosController extends Controller
         DB::beginTransaction();
         try {
             $transaction = null;
+            $isAdditional = false;
             if ($request->transaction_id) {
                 $transaction = Transaction::with('details')->where('id', $request->transaction_id)
                                           ->where('status', 'unpaid')
@@ -56,6 +57,10 @@ class PosController extends Controller
                         $transaction = $existing;
                     }
                 }
+            }
+
+            if ($transaction && $transaction->details->count() > 0) {
+                $isAdditional = true;
             }
 
             if (!$transaction) {
@@ -180,7 +185,8 @@ class PosController extends Controller
             return response()->json([
                 'success' => true, 
                 'transaction_id' => $transaction->id,
-                'print_items' => $printItems
+                'print_items' => $printItems,
+                'is_additional' => $isAdditional
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -279,6 +285,7 @@ class PosController extends Controller
     public function printKitchenTicket(Request $request, $id)
     {
         $transaction = Transaction::with(['details.product', 'user'])->findOrFail($id);
+        $isAdditional = $request->has('additional') && $request->additional == 1;
         
         if ($request->has('items')) {
             try {
@@ -312,7 +319,7 @@ class PosController extends Controller
             }
         }
         
-        return view('pos.kitchen_ticket', compact('transaction'));
+        return view('pos.kitchen_ticket', compact('transaction', 'isAdditional'));
     }
 
     public function history(Request $request)

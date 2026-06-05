@@ -24,7 +24,13 @@
 </head>
 <body onload="window.print()">
     <div class="text-center">
-        <h2 style="margin:0;">STRUK DAPUR</h2>
+        @if(isset($isAdditional) && $isAdditional)
+            <div style="border: 3px solid #000; padding: 6px 10px; font-weight: bold; font-size: 1.3rem; margin: 0 0 8px 0; text-transform: uppercase;">
+                PESANAN TAMBAHAN
+            </div>
+        @else
+            <h2 style="margin:0;">STRUK DAPUR</h2>
+        @endif
         <div class="table-number fw-bold">
             {{ $transaction->table_number == 'Takeaway' ? 'TAKEAWAY' : 'MEJA: ' . $transaction->table_number }}
         </div>
