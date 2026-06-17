@@ -86,7 +86,82 @@ class AdminController extends Controller
             $chartData[] = Transaction::whereDate('created_at', $date)->where('status', 'paid')->sum('total');
         }
 
-        return view('admin.dashboard', compact('totalSales', 'totalTransactions', 'totalVoid', 'lowStock', 'topProducts', 'profit', 'chartLabels', 'chartData', 'filter', 'customDate'));
+        // 1. Today vs Yesterday Comparison
+        $today = Carbon::today();
+        $yesterday = Carbon::yesterday();
+
+        $todayTransactions = Transaction::where('status', 'paid')
+            ->whereDate('created_at', $today)
+            ->get(['total', 'created_at']);
+
+        $yesterdayTransactions = Transaction::where('status', 'paid')
+            ->whereDate('created_at', $yesterday)
+            ->get(['total', 'created_at']);
+
+        $todayTotal = $todayTransactions->sum('total');
+        $yesterdayTotal = $yesterdayTransactions->sum('total');
+        $todayVsYesterdayDiff = $todayTotal - $yesterdayTotal;
+        $todayVsYesterdayPercent = $yesterdayTotal > 0 ? round(($todayVsYesterdayDiff / $yesterdayTotal) * 100, 1) : ($todayTotal > 0 ? 100 : 0);
+
+        // Hourly datasets (00:00 - 23:00)
+        $todayHourly = array_fill(0, 24, 0);
+        foreach ($todayTransactions as $trx) {
+            $hour = Carbon::parse($trx->created_at)->hour;
+            $todayHourly[$hour] += $trx->total;
+        }
+
+        $yesterdayHourly = array_fill(0, 24, 0);
+        foreach ($yesterdayTransactions as $trx) {
+            $hour = Carbon::parse($trx->created_at)->hour;
+            $yesterdayHourly[$hour] += $trx->total;
+        }
+
+        // 2. This Month vs Last Month Comparison
+        $thisMonthStart = Carbon::now()->startOfMonth();
+        $thisMonthEnd = Carbon::now()->endOfMonth();
+        $lastMonthStart = Carbon::now()->subMonth()->startOfMonth();
+        $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
+
+        $thisMonthTransactions = Transaction::where('status', 'paid')
+            ->whereBetween('created_at', [$thisMonthStart, $thisMonthEnd])
+            ->get(['total', 'created_at']);
+
+        $lastMonthTransactions = Transaction::where('status', 'paid')
+            ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+            ->get(['total', 'created_at']);
+
+        $thisMonthTotal = $thisMonthTransactions->sum('total');
+        $lastMonthTotal = $lastMonthTransactions->sum('total');
+        $thisMonthVsLastMonthDiff = $thisMonthTotal - $lastMonthTotal;
+        $thisMonthVsLastMonthPercent = $lastMonthTotal > 0 ? round(($thisMonthVsLastMonthDiff / $lastMonthTotal) * 100, 1) : ($thisMonthTotal > 0 ? 100 : 0);
+
+        // Daily datasets (1 - maxDays)
+        $daysInThisMonth = Carbon::now()->daysInMonth;
+        $daysInLastMonth = Carbon::now()->subMonth()->daysInMonth;
+        $maxDays = max($daysInThisMonth, $daysInLastMonth);
+
+        $thisMonthDaily = array_fill(1, $maxDays, 0);
+        foreach ($thisMonthTransactions as $trx) {
+            $day = Carbon::parse($trx->created_at)->day;
+            $thisMonthDaily[$day] += $trx->total;
+        }
+
+        $lastMonthDaily = array_fill(1, $maxDays, 0);
+        foreach ($lastMonthTransactions as $trx) {
+            $day = Carbon::parse($trx->created_at)->day;
+            $lastMonthDaily[$day] += $trx->total;
+        }
+
+        $monthLabels = range(1, $maxDays);
+        $thisMonthDailyValues = array_values($thisMonthDaily);
+        $lastMonthDailyValues = array_values($lastMonthDaily);
+
+        return view('admin.dashboard', compact(
+            'totalSales', 'totalTransactions', 'totalVoid', 'lowStock', 'topProducts', 'profit', 
+            'chartLabels', 'chartData', 'filter', 'customDate',
+            'todayTotal', 'yesterdayTotal', 'todayVsYesterdayDiff', 'todayVsYesterdayPercent', 'todayHourly', 'yesterdayHourly',
+            'thisMonthTotal', 'lastMonthTotal', 'thisMonthVsLastMonthDiff', 'thisMonthVsLastMonthPercent', 'thisMonthDailyValues', 'lastMonthDailyValues', 'monthLabels'
+        ));
     }
 
     private function applyFilter($query, $filter, $customDate = null)
