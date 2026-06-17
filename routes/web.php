@@ -14,6 +14,7 @@ Auth::routes(['register' => false]);
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/dashboard/chart-comparison', [\App\Http\Controllers\AdminController::class, 'getChartComparisonData'])->name('admin.dashboard.chart_comparison');
     Route::resource('categories', CategoryController::class);
     Route::resource('products', ProductController::class);
     Route::resource('tables', TableController::class)->except(['create', 'show', 'edit']);

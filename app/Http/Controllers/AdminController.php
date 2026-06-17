@@ -317,4 +317,125 @@ class AdminController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
+
+    public function getChartComparisonData(Request $request)
+    {
+        $mode = $request->get('mode', 'month_lastmonth');
+        
+        if ($mode === 'today_yesterday') {
+            $selectedDateStr = $request->get('date_primary', Carbon::today()->toDateString());
+            $compareDateStr = $request->get('date_secondary', Carbon::yesterday()->toDateString());
+            
+            try {
+                $primaryDate = Carbon::parse($selectedDateStr);
+            } catch (\Exception $e) {
+                $primaryDate = Carbon::today();
+            }
+            try {
+                $secondaryDate = Carbon::parse($compareDateStr);
+            } catch (\Exception $e) {
+                $secondaryDate = Carbon::yesterday();
+            }
+
+            $primaryTransactions = Transaction::where('status', 'paid')
+                ->whereDate('created_at', $primaryDate)
+                ->get(['total', 'created_at']);
+
+            $secondaryTransactions = Transaction::where('status', 'paid')
+                ->whereDate('created_at', $secondaryDate)
+                ->get(['total', 'created_at']);
+
+            $primaryTotal = $primaryTransactions->sum('total');
+            $secondaryTotal = $secondaryTransactions->sum('total');
+            $diff = $primaryTotal - $secondaryTotal;
+            $percent = $secondaryTotal > 0 ? round(($diff / $secondaryTotal) * 100, 1) : ($primaryTotal > 0 ? 100 : 0);
+
+            $primaryHourly = array_fill(0, 24, 0);
+            foreach ($primaryTransactions as $trx) {
+                $hour = Carbon::parse($trx->created_at)->hour;
+                $primaryHourly[$hour] += $trx->total;
+            }
+
+            $secondaryHourly = array_fill(0, 24, 0);
+            foreach ($secondaryTransactions as $trx) {
+                $hour = Carbon::parse($trx->created_at)->hour;
+                $secondaryHourly[$hour] += $trx->total;
+            }
+
+            return response()->json([
+                'success' => true,
+                'labels' => array_map(function($h) { return sprintf("%02d:00", $h); }, range(0, 23)),
+                'primary_label' => $primaryDate->translatedFormat('d M Y'),
+                'secondary_label' => $secondaryDate->translatedFormat('d M Y'),
+                'primary_data' => $primaryHourly,
+                'secondary_data' => $secondaryHourly,
+                'primary_total' => $primaryTotal,
+                'secondary_total' => $secondaryTotal,
+                'diff' => $diff,
+                'percent' => $percent,
+                'formatted_primary_total' => 'Rp ' . number_format($primaryTotal, 0, ',', '.'),
+                'formatted_secondary_total' => 'Rp ' . number_format($secondaryTotal, 0, ',', '.'),
+                'formatted_diff' => ($diff >= 0 ? 'Surplus (+)' : 'Defisit (-)') . ' Rp ' . number_format(abs($diff), 0, ',', '.')
+            ]);
+        } else {
+            $selectedMonthStr = $request->get('month_primary', Carbon::now()->format('Y-m'));
+            $compareMonthStr = $request->get('month_secondary', Carbon::now()->subMonth()->format('Y-m'));
+            
+            try {
+                $primaryMonth = Carbon::parse($selectedMonthStr . '-01');
+            } catch (\Exception $e) {
+                $primaryMonth = Carbon::now()->startOfMonth();
+            }
+            try {
+                $secondaryMonth = Carbon::parse($compareMonthStr . '-01');
+            } catch (\Exception $e) {
+                $secondaryMonth = Carbon::now()->subMonth()->startOfMonth();
+            }
+
+            $primaryTransactions = Transaction::where('status', 'paid')
+                ->whereBetween('created_at', [$primaryMonth->copy()->startOfMonth(), $primaryMonth->copy()->endOfMonth()])
+                ->get(['total', 'created_at']);
+
+            $secondaryTransactions = Transaction::where('status', 'paid')
+                ->whereBetween('created_at', [$secondaryMonth->copy()->startOfMonth(), $secondaryMonth->copy()->endOfMonth()])
+                ->get(['total', 'created_at']);
+
+            $primaryTotal = $primaryTransactions->sum('total');
+            $secondaryTotal = $secondaryTransactions->sum('total');
+            $diff = $primaryTotal - $secondaryTotal;
+            $percent = $secondaryTotal > 0 ? round(($diff / $secondaryTotal) * 100, 1) : ($primaryTotal > 0 ? 100 : 0);
+
+            $daysInPrimary = $primaryMonth->daysInMonth;
+            $daysInSecondary = $secondaryMonth->daysInMonth;
+            $maxDays = max($daysInPrimary, $daysInSecondary);
+
+            $primaryDaily = array_fill(1, $maxDays, 0);
+            foreach ($primaryTransactions as $trx) {
+                $day = Carbon::parse($trx->created_at)->day;
+                $primaryDaily[$day] += $trx->total;
+            }
+
+            $secondaryDaily = array_fill(1, $maxDays, 0);
+            foreach ($secondaryTransactions as $trx) {
+                $day = Carbon::parse($trx->created_at)->day;
+                $secondaryDaily[$day] += $trx->total;
+            }
+
+            return response()->json([
+                'success' => true,
+                'labels' => array_map(function($d) { return "Tgl " . $d; }, range(1, $maxDays)),
+                'primary_label' => $primaryMonth->translatedFormat('F Y'),
+                'secondary_label' => $secondaryMonth->translatedFormat('F Y'),
+                'primary_data' => array_values($primaryDaily),
+                'secondary_data' => array_values($secondaryDaily),
+                'primary_total' => $primaryTotal,
+                'secondary_total' => $secondaryTotal,
+                'diff' => $diff,
+                'percent' => $percent,
+                'formatted_primary_total' => 'Rp ' . number_format($primaryTotal, 0, ',', '.'),
+                'formatted_secondary_total' => 'Rp ' . number_format($secondaryTotal, 0, ',', '.'),
+                'formatted_diff' => ($diff >= 0 ? 'Surplus (+)' : 'Defisit (-)') . ' Rp ' . number_format(abs($diff), 0, ',', '.')
+            ]);
+        }
+    }
 }

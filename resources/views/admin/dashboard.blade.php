@@ -163,24 +163,24 @@
                 <div class="card card-stat p-4" style="border-left: 5px solid #2e7d32 !important;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="text-muted small fw-bold text-uppercase"><i class="bi bi-clock-history me-1"></i> Perbandingan Harian</div>
-                        <span class="badge {{ $todayVsYesterdayDiff >= 0 ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2 shadow-sm">
-                            <i class="bi {{ $todayVsYesterdayDiff >= 0 ? 'bi-graph-up-arrow' : 'bi-graph-down-arrow' }} me-1"></i>
-                            {{ $todayVsYesterdayDiff >= 0 ? '+' : '' }}{{ $todayVsYesterdayPercent }}%
+                        <span id="dailyGrowthBadge" class="badge {{ $todayVsYesterdayDiff >= 0 ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2 shadow-sm">
+                            <i id="dailyGrowthIcon" class="bi {{ $todayVsYesterdayDiff >= 0 ? 'bi-graph-up-arrow' : 'bi-graph-down-arrow' }} me-1"></i>
+                            <span id="dailyGrowthPercent">{{ $todayVsYesterdayDiff >= 0 ? '+' : '' }}{{ $todayVsYesterdayPercent }}%</span>
                         </span>
                     </div>
                     <div class="row align-items-center">
                         <div class="col-6 border-end">
-                            <small class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Hari Ini</small>
-                            <h4 class="fw-bold text-dark mb-0">Rp {{ number_format($todayTotal, 0, ',', '.') }}</h4>
+                            <small id="dailyPrimaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Hari Ini</small>
+                            <h4 id="dailyPrimaryTotal" class="fw-bold text-dark mb-0">Rp {{ number_format($todayTotal, 0, ',', '.') }}</h4>
                         </div>
                         <div class="col-6">
-                            <small class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Kemarin</small>
-                            <h5 class="fw-semibold text-secondary mb-0">Rp {{ number_format($yesterdayTotal, 0, ',', '.') }}</h5>
+                            <small id="dailySecondaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Kemarin</small>
+                            <h5 id="dailySecondaryTotal" class="fw-semibold text-secondary mb-0">Rp {{ number_format($yesterdayTotal, 0, ',', '.') }}</h5>
                         </div>
                     </div>
                     <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center text-muted small">
                         <span>Selisih Penjualan:</span>
-                        <span class="fw-bold {{ $todayVsYesterdayDiff >= 0 ? 'text-success' : 'text-danger' }}">
+                        <span id="dailyDiffText" class="fw-bold {{ $todayVsYesterdayDiff >= 0 ? 'text-success' : 'text-danger' }}">
                             {{ $todayVsYesterdayDiff >= 0 ? 'Surplus (+)' : 'Defisit (-)' }} Rp {{ number_format(abs($todayVsYesterdayDiff), 0, ',', '.') }}
                         </span>
                     </div>
@@ -192,24 +192,24 @@
                 <div class="card card-stat p-4" style="border-left: 5px solid #0288d1 !important;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="text-muted small fw-bold text-uppercase"><i class="bi bi-calendar-range me-1"></i> Perbandingan Bulanan (MoM)</div>
-                        <span class="badge {{ $thisMonthVsLastMonthDiff >= 0 ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2 shadow-sm">
-                            <i class="bi {{ $thisMonthVsLastMonthDiff >= 0 ? 'bi-graph-up-arrow' : 'bi-graph-down-arrow' }} me-1"></i>
-                            {{ $thisMonthVsLastMonthDiff >= 0 ? '+' : '' }}{{ $thisMonthVsLastMonthPercent }}%
+                        <span id="monthlyGrowthBadge" class="badge {{ $thisMonthVsLastMonthDiff >= 0 ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2 shadow-sm">
+                            <i id="monthlyGrowthIcon" class="bi {{ $thisMonthVsLastMonthDiff >= 0 ? 'bi-graph-up-arrow' : 'bi-graph-down-arrow' }} me-1"></i>
+                            <span id="monthlyGrowthPercent">{{ $thisMonthVsLastMonthDiff >= 0 ? '+' : '' }}{{ $thisMonthVsLastMonthPercent }}%</span>
                         </span>
                     </div>
                     <div class="row align-items-center">
                         <div class="col-6 border-end">
-                            <small class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Bulan Ini</small>
-                            <h4 class="fw-bold text-dark mb-0">Rp {{ number_format($thisMonthTotal, 0, ',', '.') }}</h4>
+                            <small id="monthlyPrimaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Bulan Ini</small>
+                            <h4 id="monthlyPrimaryTotal" class="fw-bold text-dark mb-0">Rp {{ number_format($thisMonthTotal, 0, ',', '.') }}</h4>
                         </div>
                         <div class="col-6">
-                            <small class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Bulan Kemarin</small>
-                            <h5 class="fw-semibold text-secondary mb-0">Rp {{ number_format($lastMonthTotal, 0, ',', '.') }}</h5>
+                            <small id="monthlySecondaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Bulan Kemarin</small>
+                            <h5 id="monthlySecondaryTotal" class="fw-semibold text-secondary mb-0">Rp {{ number_format($lastMonthTotal, 0, ',', '.') }}</h5>
                         </div>
                     </div>
                     <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center text-muted small">
                         <span>Selisih Penjualan:</span>
-                        <span class="fw-bold {{ $thisMonthVsLastMonthDiff >= 0 ? 'text-success' : 'text-danger' }}">
+                        <span id="monthlyDiffText" class="fw-bold {{ $thisMonthVsLastMonthDiff >= 0 ? 'text-success' : 'text-danger' }}">
                             {{ $thisMonthVsLastMonthDiff >= 0 ? 'Surplus (+)' : 'Defisit (-)' }} Rp {{ number_format(abs($thisMonthVsLastMonthDiff), 0, ',', '.') }}
                         </span>
                     </div>
@@ -223,10 +223,22 @@
                 <div class="card top-menu-card p-4">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                         <h5 class="fw-bold m-0"><i class="bi bi-graph-up text-primary me-2"></i> Analisis & Tren Grafik Penjualan</h5>
-                        <div class="btn-group shadow-sm rounded-pill p-1 bg-light" role="group" style="border: 1px solid rgba(0,0,0,0.05);">
-                            <button type="button" class="btn btn-sm btn-success rounded-pill px-3 active" id="btnChart7Days" onclick="switchChartMode('7days')">7 Hari Terakhir</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-pill px-3" id="btnChartTodayYesterday" onclick="switchChartMode('today_yesterday')">Hari Ini vs Kemarin</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-pill px-3" id="btnChartMonthLastMonth" onclick="switchChartMode('month_lastmonth')">Bulan Ini vs Bulan Kemarin</button>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <!-- Date Selectors (Primary & Secondary) -->
+                            <input type="date" id="chartDatePrimary" class="form-control form-control-sm rounded-pill shadow-sm border-success text-success fw-bold d-none" style="width: 135px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->toDateString() }}">
+                            <span id="comparisonSeparatorDate" class="text-muted small fw-bold d-none">vs</span>
+                            <input type="date" id="chartDateSecondary" class="form-control form-control-sm rounded-pill shadow-sm border-info text-info fw-bold d-none" style="width: 135px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->subDay()->toDateString() }}">
+
+                            <!-- Month Selectors (Primary & Secondary) -->
+                            <input type="month" id="chartMonthPrimary" class="form-control form-control-sm rounded-pill shadow-sm border-success text-success fw-bold d-none" style="width: 135px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->format('Y-m') }}">
+                            <span id="comparisonSeparatorMonth" class="text-muted small fw-bold d-none">vs</span>
+                            <input type="month" id="chartMonthSecondary" class="form-control form-control-sm rounded-pill shadow-sm border-info text-info fw-bold d-none" style="width: 135px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->subMonth()->format('Y-m') }}">
+
+                            <div class="btn-group shadow-sm rounded-pill p-1 bg-light" role="group" style="border: 1px solid rgba(0,0,0,0.05);">
+                                <button type="button" class="btn btn-sm btn-success rounded-pill px-3 active" id="btnChart7Days" onclick="switchChartMode('7days')">7 Hari Terakhir</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-pill px-3" id="btnChartTodayYesterday" onclick="switchChartMode('today_yesterday')">Hari Ini vs Kemarin</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-pill px-3" id="btnChartMonthLastMonth" onclick="switchChartMode('month_lastmonth')">Bulan Ini vs Bulan Kemarin</button>
+                            </div>
                         </div>
                     </div>
                     <div>
@@ -373,64 +385,14 @@
                 fill: true,
                 tension: 0.4
             }]
-        },
-        'today_yesterday': {
-            labels: Array.from({length: 24}, (_, i) => `${String(i).padStart(2, '0')}:00`),
-            datasets: [
-                {
-                    label: 'Hari Ini (Rp)',
-                    data: {!! json_encode($todayHourly ?? []) !!},
-                    borderColor: '#2e7d32',
-                    backgroundColor: 'rgba(46, 125, 50, 0.05)',
-                    borderWidth: 3,
-                    pointBackgroundColor: '#f57c00',
-                    pointRadius: 4,
-                    fill: true,
-                    tension: 0.4
-                },
-                {
-                    label: 'Kemarin (Rp)',
-                    data: {!! json_encode($yesterdayHourly ?? []) !!},
-                    borderColor: '#0288d1',
-                    backgroundColor: 'rgba(2, 136, 209, 0.05)',
-                    borderWidth: 3,
-                    pointBackgroundColor: '#00acc1',
-                    pointRadius: 4,
-                    fill: true,
-                    tension: 0.4
-                }
-            ]
-        },
-        'month_lastmonth': {
-            labels: {!! json_encode($monthLabels ?? []) !!}.map(d => `Tgl ${d}`),
-            datasets: [
-                {
-                    label: 'Bulan Ini (Rp)',
-                    data: {!! json_encode($thisMonthDailyValues ?? []) !!},
-                    borderColor: '#2e7d32',
-                    backgroundColor: 'rgba(46, 125, 50, 0.05)',
-                    borderWidth: 3,
-                    pointBackgroundColor: '#f57c00',
-                    pointRadius: 4,
-                    fill: true,
-                    tension: 0.4
-                },
-                {
-                    label: 'Bulan Kemarin (Rp)',
-                    data: {!! json_encode($lastMonthDailyValues ?? []) !!},
-                    borderColor: '#0288d1',
-                    backgroundColor: 'rgba(2, 136, 209, 0.05)',
-                    borderWidth: 3,
-                    pointBackgroundColor: '#00acc1',
-                    pointRadius: 4,
-                    fill: true,
-                    tension: 0.4
-                }
-            ]
         }
     };
 
+    let currentMode = '7days';
+
     function switchChartMode(mode) {
+        currentMode = mode;
+
         // Toggle active button style
         const buttons = {
             '7days': document.getElementById('btnChart7Days'),
@@ -447,14 +409,165 @@
             }
         });
 
-        // Update chart data
-        salesChart.data.labels = chartDataSets[mode].labels;
-        salesChart.data.datasets = chartDataSets[mode].datasets;
+        // Show/hide inputs based on mode
+        const datePrimary = document.getElementById('chartDatePrimary');
+        const dateSecondary = document.getElementById('chartDateSecondary');
+        const separatorDate = document.getElementById('comparisonSeparatorDate');
         
-        // Show legend if we are doing comparison (multiple datasets)
-        salesChart.options.plugins.legend.display = chartDataSets[mode].datasets.length > 1;
-        
-        salesChart.update();
+        const monthPrimary = document.getElementById('chartMonthPrimary');
+        const monthSecondary = document.getElementById('chartMonthSecondary');
+        const separatorMonth = document.getElementById('comparisonSeparatorMonth');
+
+        if (mode === '7days') {
+            datePrimary.classList.add('d-none');
+            dateSecondary.classList.add('d-none');
+            separatorDate.classList.add('d-none');
+            monthPrimary.classList.add('d-none');
+            monthSecondary.classList.add('d-none');
+            separatorMonth.classList.add('d-none');
+
+            // Reset chart to default preloaded 7 days
+            salesChart.data.labels = chartDataSets['7days'].labels;
+            salesChart.data.datasets = chartDataSets['7days'].datasets;
+            salesChart.options.plugins.legend.display = false;
+            salesChart.update();
+        } else if (mode === 'today_yesterday') {
+            datePrimary.classList.remove('d-none');
+            dateSecondary.classList.remove('d-none');
+            separatorDate.classList.remove('d-none');
+            monthPrimary.classList.add('d-none');
+            monthSecondary.classList.add('d-none');
+            separatorMonth.classList.add('d-none');
+
+            loadComparisonData();
+        } else if (mode === 'month_lastmonth') {
+            datePrimary.classList.add('d-none');
+            dateSecondary.classList.add('d-none');
+            separatorDate.classList.add('d-none');
+            monthPrimary.classList.remove('d-none');
+            monthSecondary.classList.remove('d-none');
+            separatorMonth.classList.remove('d-none');
+
+            loadComparisonData();
+        }
+    }
+
+    async function loadComparisonData() {
+        if (currentMode === '7days') return;
+
+        let url = '{{ route("admin.dashboard.chart_comparison") }}?mode=' + currentMode;
+
+        if (currentMode === 'today_yesterday') {
+            const datePrim = document.getElementById('chartDatePrimary').value;
+            const dateSec = document.getElementById('chartDateSecondary').value;
+            url += '&date_primary=' + datePrim + '&date_secondary=' + dateSec;
+        } else if (currentMode === 'month_lastmonth') {
+            const monthPrim = document.getElementById('chartMonthPrimary').value;
+            const monthSec = document.getElementById('chartMonthSecondary').value;
+            url += '&month_primary=' + monthPrim + '&month_secondary=' + monthSec;
+        }
+
+        const canvas = document.getElementById('salesChart');
+        canvas.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            if (data.success) {
+                // Update chart
+                salesChart.data.labels = data.labels;
+                salesChart.data.datasets = [
+                    {
+                        label: data.primary_label + ' (Rp)',
+                        data: data.primary_data,
+                        borderColor: '#2e7d32',
+                        backgroundColor: 'rgba(46, 125, 50, 0.05)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#f57c00',
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: data.secondary_label + ' (Rp)',
+                        data: data.secondary_data,
+                        borderColor: '#0288d1',
+                        backgroundColor: 'rgba(2, 136, 209, 0.05)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#00acc1',
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    }
+                ];
+                salesChart.options.plugins.legend.display = true;
+                salesChart.update();
+
+                // Update cards dynamically based on mode
+                if (currentMode === 'today_yesterday') {
+                    const badge = document.getElementById('dailyGrowthBadge');
+                    const icon = document.getElementById('dailyGrowthIcon');
+                    const percentText = document.getElementById('dailyGrowthPercent');
+                    
+                    percentText.innerText = (data.diff >= 0 ? '+' : '') + data.percent + '%';
+                    
+                    if (data.diff >= 0) {
+                        badge.className = 'badge bg-success rounded-pill px-3 py-2 shadow-sm';
+                        icon.className = 'bi bi-graph-up-arrow me-1';
+                    } else {
+                        badge.className = 'badge bg-danger rounded-pill px-3 py-2 shadow-sm';
+                        icon.className = 'bi bi-graph-down-arrow me-1';
+                    }
+
+                    document.getElementById('dailyPrimaryLabel').innerText = data.primary_label;
+                    document.getElementById('dailyPrimaryTotal').innerText = data.formatted_primary_total;
+                    document.getElementById('dailySecondaryLabel').innerText = data.secondary_label;
+                    document.getElementById('dailySecondaryTotal').innerText = data.formatted_secondary_total;
+                    
+                    const diffText = document.getElementById('dailyDiffText');
+                    diffText.innerText = data.formatted_diff;
+                    if (data.diff >= 0) {
+                        diffText.className = 'fw-bold text-success';
+                    } else {
+                        diffText.className = 'fw-bold text-danger';
+                    }
+                } else if (currentMode === 'month_lastmonth') {
+                    const badge = document.getElementById('monthlyGrowthBadge');
+                    const icon = document.getElementById('monthlyGrowthIcon');
+                    const percentText = document.getElementById('monthlyGrowthPercent');
+                    
+                    percentText.innerText = (data.diff >= 0 ? '+' : '') + data.percent + '%';
+                    
+                    if (data.diff >= 0) {
+                        badge.className = 'badge bg-success rounded-pill px-3 py-2 shadow-sm';
+                        icon.className = 'bi bi-graph-up-arrow me-1';
+                    } else {
+                        badge.className = 'badge bg-danger rounded-pill px-3 py-2 shadow-sm';
+                        icon.className = 'bi bi-graph-down-arrow me-1';
+                    }
+
+                    document.getElementById('monthlyPrimaryLabel').innerText = data.primary_label;
+                    document.getElementById('monthlyPrimaryTotal').innerText = data.formatted_primary_total;
+                    document.getElementById('monthlySecondaryLabel').innerText = data.secondary_label;
+                    document.getElementById('monthlySecondaryTotal').innerText = data.formatted_secondary_total;
+                    
+                    const diffText = document.getElementById('monthlyDiffText');
+                    diffText.innerText = data.formatted_diff;
+                    if (data.diff >= 0) {
+                        diffText.className = 'fw-bold text-success';
+                    } else {
+                        diffText.className = 'fw-bold text-danger';
+                    }
+                }
+            } else {
+                console.error("Failed to load comparison data: ", data.message);
+            }
+        } catch (error) {
+            console.error("AJAX Error loading comparison data: ", error);
+        } finally {
+            canvas.style.opacity = '1';
+        }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
