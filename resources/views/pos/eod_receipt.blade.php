@@ -19,7 +19,9 @@
 <body onload="window.print(); setTimeout(() => window.close(), 1000);">
 
     <div class="header">
-        <h2>RUMAH MAKAN KULU ASRI</h2>
+        <div style="margin-bottom: 5px;">
+            <img src="{{ asset('images/logo.jpg') }}" alt="Kulu Asri Logo" style="width: 150px; height: auto; filter: grayscale(100%) contrast(120%); display: inline-block;">
+        </div>
         <p>Jl.Singosari No.7 Kecamatan Kranganyar Kab.Pekalongan</p>
         <p>Telp: +62 856-4184-7054</p>
         <div class="line"></div>
