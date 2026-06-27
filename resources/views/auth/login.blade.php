@@ -195,15 +195,9 @@
         <!-- Left Side: Branding/Image -->
         <div class="login-left">
             <div class="login-left-content">
-                <div class="icon-wrapper">
-                    <!-- Simple SVG icon for Restaurant/POS -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
-                        <path d="M7 2v20"></path>
-                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
-                    </svg>
+                <div class="logo-wrapper mb-4">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="Kulu Asri Logo" style="width: 320px; max-width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid rgba(255,255,255,0.3);">
                 </div>
-                <h1>Kulu Asri</h1>
                 <p>Sistem Point of Sale Modern untuk Mengelola Bisnis Kuliner Anda dengan Lebih Cepat dan Efisien.</p>
             </div>
         </div>
@@ -212,6 +206,9 @@
         <div class="login-right">
             <div class="login-box">
                 <div class="login-header">
+                    <div class="d-lg-none mb-4 text-center">
+                        <img src="{{ asset('images/logo.jpg') }}" alt="Kulu Asri Logo" style="width: 180px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                    </div>
                     <h2>Selamat Datang! 👋</h2>
                     <p>Silakan login ke akun Anda untuk melanjutkan.</p>
                 </div>
