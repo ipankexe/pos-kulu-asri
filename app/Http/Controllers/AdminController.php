@@ -192,7 +192,7 @@ class AdminController extends Controller
     {
         $filter = $request->get('filter', 'all');
         $customDate = $request->get('custom_date');
-        $query = Transaction::with('user')->orderBy('created_at', 'desc');
+        $query = Transaction::with(['user', 'details.product', 'voidLog'])->orderBy('created_at', 'desc');
         $query = $this->applyFilter($query, $filter, $customDate);
         
         $transactions = $query->paginate(20)->appends(['filter' => $filter, 'custom_date' => $customDate]);

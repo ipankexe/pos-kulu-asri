@@ -66,7 +66,123 @@
                         <tr>
                             <td class="px-4 py-3">{{ $trx->created_at->format('d/m/Y H:i') }}</td>
                             <td class="py-3 fw-semibold">{{ $trx->user->name ?? '-' }}</td>
-                            <td class="py-3">{{ $trx->customer_name }}</td>
+                            <td class="py-3">
+                                <a href="#" class="text-decoration-none fw-bold text-success" data-bs-toggle="modal" data-bs-target="#detailModal{{ $trx->id }}">
+                                    {{ $trx->customer_name }}
+                                </a>
+                                
+                                <!-- Modal Detail Transaksi -->
+                                <div class="modal fade" id="detailModal{{ $trx->id }}" tabindex="-1" aria-labelledby="detailModalLabel{{ $trx->id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow-lg rounded-4 text-start">
+                                            <div class="modal-header border-0 bg-success bg-opacity-10 rounded-top-4 p-4">
+                                                <h5 class="modal-title fw-bold text-success" id="detailModalLabel{{ $trx->id }}">
+                                                    <i class="bi bi-receipt me-2"></i> Detail Transaksi #{{ $trx->transaction_number ?? $trx->id }}
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body p-4">
+                                                <div class="mb-4">
+                                                    <table class="table table-borderless table-sm mb-0">
+                                                        <tr>
+                                                            <td class="text-muted py-1" style="width: 35%;">Tanggal / Waktu</td>
+                                                            <td class="fw-semibold py-1">: {{ $trx->created_at->format('d/m/Y H:i') }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-muted py-1">Kasir</td>
+                                                            <td class="fw-semibold py-1">: {{ $trx->user->name ?? '-' }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-muted py-1">Pelanggan</td>
+                                                            <td class="fw-semibold py-1">: {{ $trx->customer_name }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-muted py-1">Meja</td>
+                                                            <td class="fw-semibold py-1">: {{ $trx->table_number }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-muted py-1">Metode Bayar</td>
+                                                            <td class="fw-semibold py-1">: <span class="badge bg-secondary rounded-pill px-3 py-1">{{ strtoupper($trx->payment_method ?? '-') }}</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-muted py-1">Status</td>
+                                                            <td class="fw-semibold py-1">: 
+                                                                @if($trx->status === 'paid')
+                                                                    <span class="badge bg-success rounded-pill px-3 py-1">SUKSES</span>
+                                                                @else
+                                                                    <span class="badge bg-danger rounded-pill px-3 py-1">VOID</span>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+
+                                                <h6 class="fw-bold mb-3"><i class="bi bi-list-stars me-2 text-success"></i> Menu Yang Dipesan</h6>
+                                                <div class="bg-light rounded-4 p-3 mb-4">
+                                                    <table class="table table-borderless table-sm mb-0 align-middle">
+                                                        <thead>
+                                                            <tr class="text-muted border-bottom border-secondary border-opacity-10 small">
+                                                                <th>Menu</th>
+                                                                <th class="text-center">Qty</th>
+                                                                <th class="text-end">Harga</th>
+                                                                <th class="text-end">Total</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($trx->details as $detail)
+                                                            <tr>
+                                                                <td class="fw-semibold py-2">
+                                                                    {{ $detail->product->name ?? 'Menu Terhapus' }}
+                                                                    @if($detail->notes)
+                                                                        <span class="d-block small text-muted font-italic">- Catatan: {{ $detail->notes }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center py-2">{{ $detail->qty }}</td>
+                                                                <td class="text-end py-2">Rp {{ number_format($detail->price, 0, ',', '.') }}</td>
+                                                                <td class="text-end py-2 fw-bold">Rp {{ number_format($detail->qty * $detail->price, 0, ',', '.') }}</td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <div class="bg-light rounded-4 p-3">
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <span class="text-muted">Diskon</span>
+                                                        <span class="fw-semibold text-danger">- Rp {{ number_format($trx->discount ?? 0, 0, ',', '.') }}</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                                        <span class="fw-bold text-success fs-5">TOTAL</span>
+                                                        <span class="fw-bold text-success fs-4">Rp {{ number_format($trx->total, 0, ',', '.') }}</span>
+                                                    </div>
+                                                    @if($trx->status === 'paid')
+                                                        <div class="d-flex justify-content-between mb-1 mt-2">
+                                                            <span class="text-muted">Bayar</span>
+                                                            <span class="fw-semibold">Rp {{ number_format($trx->payment ?? 0, 0, ',', '.') }}</span>
+                                                        </div>
+                                                        <div class="d-flex justify-content-between mb-1">
+                                                            <span class="text-muted">Kembali</span>
+                                                            <span class="fw-semibold">Rp {{ number_format($trx->change ?? 0, 0, ',', '.') }}</span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                @if($trx->status === 'void' && $trx->voidLog)
+                                                <div class="mt-4 p-3 bg-danger bg-opacity-10 rounded-4 text-danger small">
+                                                    <div class="fw-bold mb-1"><i class="bi bi-info-circle me-1"></i> Rincian Void:</div>
+                                                    <div><strong>Alasan:</strong> {{ $trx->voidLog->reason ?? '-' }}</div>
+                                                    <div><strong>Dibatalkan Oleh:</strong> {{ $trx->voidLog->void_by ?? '-' }}</div>
+                                                    <div><strong>Pada Waktu:</strong> {{ $trx->voidLog->created_at->format('d/m/Y H:i') }}</div>
+                                                </div>
+                                                @endif
+                                            </div>
+                                            <div class="modal-footer border-0 p-4 pt-0">
+                                                <button type="button" class="btn btn-outline-success rounded-pill px-4 fw-bold w-100" data-bs-dismiss="modal">Tutup</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
                             <td class="py-3 text-center">{{ $trx->table_number }}</td>
                             <td class="py-3 text-end fw-bold">Rp {{ number_format($trx->total, 0, ',', '.') }}</td>
                             <td class="py-3 text-center">
