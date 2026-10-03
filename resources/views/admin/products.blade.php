@@ -39,7 +39,7 @@
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th class="px-4 py-3">Nama Produk</th>
+                            <th class="px-4 py-3" style="width: 320px;">Produk</th>
                             <th class="py-3">Kategori</th>
                             <th class="py-3 text-end">HPP</th>
                             <th class="py-3 text-end">Harga Jual</th>
@@ -50,7 +50,23 @@
                     <tbody>
                         @forelse($products as $product)
                         <tr>
-                            <td class="px-4 py-3 fw-bold">{{ $product->name }}</td>
+                            <td class="px-4 py-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-3 overflow-hidden bg-light border flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                        @if($product->image_url)
+                                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-100 h-100 object-fit-cover">
+                                        @else
+                                            <i class="bi bi-image text-muted fs-5"></i>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ $product->name }}</div>
+                                        @if($product->description)
+                                            <small class="text-muted text-truncate d-block" style="max-width: 200px;">{{ $product->description }}</small>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
                             <td class="py-3">{{ $product->category->name ?? '-' }}</td>
                             <td class="py-3 text-end text-muted">Rp {{ number_format($product->cost_price, 0, ',', '.') }}</td>
                             <td class="py-3 text-end fw-semibold text-success">Rp {{ number_format($product->price, 0, ',', '.') }}</td>
@@ -74,46 +90,74 @@
 
                         <!-- Edit Modal -->
                         <div class="modal fade" id="editModal{{ $product->id }}" tabindex="-1">
-                            <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
                                 <div class="modal-content border-0 shadow-lg rounded-4">
-                                    <form action="{{ route('products.update', $product->id) }}" method="POST">
+                                    <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                                         @csrf @method('PUT')
                                         <div class="modal-header border-0 bg-light rounded-top-4">
                                             <h5 class="modal-title fw-bold">Edit Produk</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body p-4">
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Nama Produk</label>
-                                                <input type="text" name="name" class="form-control" value="{{ $product->name }}" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Kategori</label>
-                                                <select name="category_id" class="form-select" required>
-                                                    @foreach($categories as $category)
-                                                        <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="row g-3 mb-3">
-                                                <div class="col-md-6">
-                                                    <label class="form-label fw-bold">Harga Pokok (HPP)</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">Rp</span>
-                                                        <input type="number" name="cost_price" class="form-control" value="{{ $product->cost_price }}" required min="0">
+                                            <div class="row g-3">
+                                                <div class="col-md-7">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Nama Produk</label>
+                                                        <input type="text" name="name" class="form-control" value="{{ $product->name }}" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Kategori</label>
+                                                        <select name="category_id" class="form-select" required>
+                                                            @foreach($categories as $category)
+                                                                <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="row g-3 mb-3">
+                                                        <div class="col-md-6">
+                                                            <label class="form-label fw-bold">Harga Pokok (HPP)</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text">Rp</span>
+                                                                <input type="number" name="cost_price" class="form-control" value="{{ $product->cost_price }}" required min="0">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label fw-bold">Harga Jual</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text">Rp</span>
+                                                                <input type="number" name="price" class="form-control" value="{{ $product->price }}" required min="0">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Stok</label>
+                                                        <input type="number" name="stock" class="form-control" value="{{ $product->stock }}" required min="0">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Deskripsi Produk (Untuk QR Menu Pelanggan)</label>
+                                                        <textarea name="description" class="form-control" rows="3" placeholder="Contoh: Bumbu rempah istimewa, disajikan dengan lalapan...">{{ $product->description }}</textarea>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label fw-bold">Harga Jual</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">Rp</span>
-                                                        <input type="number" name="price" class="form-control" value="{{ $product->price }}" required min="0">
+                                                <div class="col-md-5">
+                                                    <label class="form-label fw-bold">Foto Produk</label>
+                                                    <div class="border rounded-4 p-3 bg-light text-center mb-3">
+                                                        @if($product->image_url)
+                                                            <img src="{{ $product->image_url }}" alt="Preview" class="img-fluid rounded-3 mb-2" style="max-height: 150px; object-fit: cover;">
+                                                            <div class="small text-success fw-bold"><i class="bi bi-check-circle"></i> Foto terpasang</div>
+                                                        @else
+                                                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                                            <div class="small text-muted">Belum ada foto</div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label small fw-semibold">Upload File Foto Baru</label>
+                                                        <input type="file" name="image" class="form-control form-control-sm" accept="image/*">
+                                                    </div>
+                                                    <div>
+                                                        <label class="form-label small fw-semibold">Atau URL Foto (Online)</label>
+                                                        <input type="url" name="image_url" class="form-control form-control-sm" placeholder="https://..." value="{{ str_starts_with($product->image ?? '', 'http') ? $product->image : '' }}">
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Stok</label>
-                                                <input type="number" name="stock" class="form-control" value="{{ $product->stock }}" required min="0">
                                             </div>
                                         </div>
                                         <div class="modal-footer border-0">
@@ -143,47 +187,70 @@
 
 <!-- Create Modal -->
 <div class="modal fade" id="createModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg rounded-4">
-            <form action="{{ route('products.store') }}" method="POST">
+            <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-header border-0 bg-light rounded-top-4">
                     <h5 class="modal-title fw-bold">Tambah Produk Baru</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Nama Produk</label>
-                        <input type="text" name="name" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Kategori</label>
-                        <select name="category_id" class="form-select" required>
-                            <option value="">Pilih Kategori</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Harga Pokok (HPP)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rp</span>
-                                <input type="number" name="cost_price" class="form-control" required min="0">
+                    <div class="row g-3">
+                        <div class="col-md-7">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nama Produk</label>
+                                <input type="text" name="name" class="form-control" required placeholder="Contoh: Bebek Goreng Kulu Asri">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Kategori</label>
+                                <select name="category_id" class="form-select" required>
+                                    <option value="">Pilih Kategori</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Harga Pokok (HPP)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp</span>
+                                        <input type="number" name="cost_price" class="form-control" required min="0" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Harga Jual</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp</span>
+                                        <input type="number" name="price" class="form-control" required min="0" placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Stok Awal</label>
+                                <input type="number" name="stock" class="form-control" required min="0" value="0">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Deskripsi Produk (Untuk QR Menu)</label>
+                                <textarea name="description" class="form-control" rows="3" placeholder="Deskripsi ringkas sajian..."></textarea>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Harga Jual</label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rp</span>
-                                <input type="number" name="price" class="form-control" required min="0">
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold">Foto Produk</label>
+                            <div class="border rounded-4 p-3 bg-light text-center mb-3">
+                                <i class="bi bi-cloud-arrow-up text-muted" style="font-size: 3rem;"></i>
+                                <div class="small text-muted mt-2">Upload foto atau masukkan link online gambar menu</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Upload File Foto</label>
+                                <input type="file" name="image" class="form-control form-control-sm" accept="image/*">
+                            </div>
+                            <div>
+                                <label class="form-label small fw-semibold">Atau URL Foto (Online)</label>
+                                <input type="url" name="image_url" class="form-control form-control-sm" placeholder="https://...">
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Stok Awal</label>
-                        <input type="number" name="stock" class="form-control" required min="0" value="0">
                     </div>
                 </div>
                 <div class="modal-footer border-0">

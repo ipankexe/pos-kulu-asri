@@ -14,6 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        // Nonaktifkan CSRF untuk webhook Payment Gateway
+        $middleware->validateCsrfTokens(except: [
+            'payment/webhook',
+            'payment/webhook/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

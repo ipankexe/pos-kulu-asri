@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Struk Rekapitulasi (End of Day)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Courier New', Courier, monospace; width: 300px; margin: 0 auto; padding: 20px 0; font-size: 12px; }
         .header { text-align: center; margin-bottom: 20px; }
@@ -14,6 +15,14 @@
         .text-right { text-align: right; }
         .bold { font-weight: bold; }
         .footer { text-align: center; margin-top: 20px; font-size: 10px; }
+        .eod-tagline {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 12px;
+            font-weight: 700;
+            font-style: italic;
+            letter-spacing: 0.5px;
+            margin-top: 6px;
+        }
     </style>
 </head>
 <body onload="window.print(); setTimeout(() => window.close(), 1000);">
@@ -71,6 +80,7 @@
         <div class="line"></div>
         <p>Shift berhasil ditutup dan direkap.</p>
         <p>Terima kasih atas kerja keras Anda hari ini!</p>
+        <p class="eod-tagline">Kulu Asri - Jagonya Ikan Bakar!</p>
     </div>
 
 </body>

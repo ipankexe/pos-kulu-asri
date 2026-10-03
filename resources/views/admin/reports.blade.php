@@ -30,19 +30,25 @@
                 <form action="{{ route('admin.reports') }}" method="GET" class="d-flex align-items-center" id="filterForm">
                     <input type="date" name="custom_date" id="customDateInput" class="form-control rounded-pill border-success text-success fw-bold shadow-sm me-2 {{ ($filter ?? 'all') == 'custom_date' ? '' : 'd-none' }}" value="{{ $customDate ?? \Carbon\Carbon::now()->toDateString() }}" onchange="document.getElementById('filterForm').submit()" style="max-width: 150px;">
                     <select name="filter" id="filterSelect" class="form-select rounded-pill border-success text-success fw-bold shadow-sm me-2" onchange="toggleDateInput()" style="cursor: pointer; width: 160px;">
-                        <option value="all" {{ $filter == 'all' ? 'selected' : '' }}>Semua Waktu</option>
-                        <option value="daily" {{ $filter == 'daily' ? 'selected' : '' }}>Hari Ini</option>
-                        <option value="weekly" {{ $filter == 'weekly' ? 'selected' : '' }}>Minggu Ini</option>
-                        <option value="monthly" {{ $filter == 'monthly' ? 'selected' : '' }}>Bulan Ini</option>
-                        <option value="yearly" {{ $filter == 'yearly' ? 'selected' : '' }}>Tahun Ini</option>
-                        <option value="custom_date" {{ $filter == 'custom_date' ? 'selected' : '' }}>Tanggal Spesifik</option>
+                        <option value="all" {{ ($filter ?? 'all') == 'all' ? 'selected' : '' }}>Semua Waktu</option>
+                        <option value="daily" {{ ($filter ?? 'all') == 'daily' ? 'selected' : '' }}>Hari Ini</option>
+                        <option value="weekly" {{ ($filter ?? 'all') == 'weekly' ? 'selected' : '' }}>Minggu Ini</option>
+                        <option value="monthly" {{ ($filter ?? 'all') == 'monthly' ? 'selected' : '' }}>Bulan Ini</option>
+                        <option value="yearly" {{ ($filter ?? 'all') == 'yearly' ? 'selected' : '' }}>Tahun Ini</option>
+                        <option value="custom_date" {{ ($filter ?? 'all') == 'custom_date' ? 'selected' : '' }}>Tanggal Spesifik</option>
+                    </select>
+
+                    <select name="source" class="form-select rounded-pill border-success text-success fw-bold shadow-sm me-2" onchange="document.getElementById('filterForm').submit()" style="cursor: pointer; width: 160px;">
+                        <option value="all" {{ ($source ?? 'all') == 'all' ? 'selected' : '' }}>Semua Kanal</option>
+                        <option value="pos" {{ ($source ?? 'all') == 'pos' ? 'selected' : '' }}>POS (Kasir)</option>
+                        <option value="qr" {{ ($source ?? 'all') == 'qr' ? 'selected' : '' }}>QR (Meja)</option>
                     </select>
                 </form>
 
-                <a href="{{ route('admin.reports.export', ['filter' => $filter, 'custom_date' => $customDate ?? '']) }}" class="btn btn-success fw-bold rounded-pill px-4 shadow-sm">
+                <a href="{{ route('admin.reports.export', ['filter' => $filter, 'custom_date' => $customDate ?? '', 'source' => $source ?? 'all']) }}" class="btn btn-success fw-bold rounded-pill px-4 shadow-sm">
                     <i class="bi bi-file-earmark-excel me-2"></i> Export Excel
                 </a>
-                <a href="{{ route('admin.reports.pdf', ['filter' => $filter, 'custom_date' => $customDate ?? '']) }}" target="_blank" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+                <a href="{{ route('admin.reports.pdf', ['filter' => $filter, 'custom_date' => $customDate ?? '', 'source' => $source ?? 'all']) }}" target="_blank" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
                     <i class="bi bi-file-earmark-pdf me-2"></i> Export PDF
                 </a>
             </div>
@@ -54,7 +60,8 @@
                     <thead class="table-light">
                         <tr>
                             <th class="px-4 py-3">Tanggal / Waktu</th>
-                            <th class="py-3">Kasir</th>
+                            <th class="py-3">Kanal</th>
+                            <th class="py-3">Kasir / Pemesan</th>
                             <th class="py-3">Pelanggan</th>
                             <th class="py-3">Meja</th>
                             <th class="py-3 text-end">Total Belanja</th>
@@ -65,7 +72,18 @@
                         @forelse($transactions as $trx)
                         <tr>
                             <td class="px-4 py-3">{{ $trx->created_at->format('d/m/Y H:i') }}</td>
-                            <td class="py-3 fw-semibold">{{ $trx->user->name ?? '-' }}</td>
+                            <td class="py-3">
+                                @if($trx->order_source === 'qr')
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fw-bold">
+                                        <i class="bi bi-qr-code me-1"></i> QR Order
+                                    </span>
+                                @else
+                                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 fw-bold">
+                                        <i class="bi bi-shop me-1"></i> POS Kasir
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-3 fw-semibold">{{ $trx->user->name ?? ($trx->isQr() ? 'Self-Order (QR)' : '-') }}</td>
                             <td class="py-3">
                                 <a href="#" class="text-decoration-none fw-bold text-success" data-bs-toggle="modal" data-bs-target="#detailModal{{ $trx->id }}">
                                     {{ $trx->customer_name }}

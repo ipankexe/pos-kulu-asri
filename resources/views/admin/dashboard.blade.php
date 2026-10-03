@@ -156,6 +156,70 @@
             </div>
         </div>
 
+        <!-- Channel Performance Stats Row (Satu POS, Dua Channel Order) -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <a href="{{ route('admin.reports', ['source' => 'pos', 'filter' => $filter, 'custom_date' => $customDate]) }}" class="text-decoration-none">
+                    <div class="card card-stat p-4 border-start border-primary border-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-muted small fw-bold text-uppercase mb-1"><i class="bi bi-shop me-1"></i> Order POS Kasir</div>
+                                <h4 class="mb-0 fw-bold text-dark">{{ $posTrxCount }} Trx</h4>
+                                <small class="text-primary fw-bold">Rp {{ number_format($posRevenue, 0, ',', '.') }}</small>
+                            </div>
+                            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                <i class="bi bi-person-badge"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{{ route('admin.reports', ['source' => 'qr', 'filter' => $filter, 'custom_date' => $customDate]) }}" class="text-decoration-none">
+                    <div class="card card-stat p-4 border-start border-success border-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-muted small fw-bold text-uppercase mb-1"><i class="bi bi-qr-code me-1"></i> Order QR Meja</div>
+                                <h4 class="mb-0 fw-bold text-dark">{{ $qrTrxCount }} Trx</h4>
+                                <small class="text-success fw-bold">Rp {{ number_format($qrRevenue, 0, ',', '.') }}</small>
+                            </div>
+                            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                <i class="bi bi-phone"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-stat p-4 border-start border-warning border-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted small fw-bold text-uppercase mb-1"><i class="bi bi-hourglass-split me-1"></i> Pembayaran Pending</div>
+                            <h4 class="mb-0 fw-bold text-dark">{{ $totalPending }} Trx</h4>
+                            <small class="text-warning fw-bold">Menunggu Payment</small>
+                        </div>
+                        <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-stat p-4 border-start border-secondary border-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted small fw-bold text-uppercase mb-1"><i class="bi bi-x-circle me-1"></i> Pembayaran Batal/Expired</div>
+                            <h4 class="mb-0 fw-bold text-dark">{{ $totalFailed }} Trx</h4>
+                            <small class="text-muted">Tidak Terproses</small>
+                        </div>
+                        <div class="stat-icon bg-secondary bg-opacity-10 text-secondary">
+                            <i class="bi bi-slash-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Comparison Stats Row -->
         <div class="row g-4 mb-5">
             <!-- Today vs Yesterday -->

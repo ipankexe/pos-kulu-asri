@@ -12,16 +12,59 @@
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-success"><i class="bi bi-clock-history"></i> Riwayat Transaksi</h3>
-        <a href="{{ route('pos.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Kembali ke Kasir</a>
+        <div>
+            <h3 class="fw-bold text-success m-0"><i class="bi bi-clock-history"></i> Riwayat Transaksi</h3>
+            <small style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #b45309; font-weight: 700;">Kulu Asri - Jagonya Ikan Bakar!</small>
+        </div>
+        <a href="{{ route('pos.index') }}" class="btn btn-outline-secondary rounded-pill px-4"><i class="bi bi-arrow-left me-1"></i> Kembali ke Kasir</a>
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success rounded-4">{{ session('success') }}</div>
     @endif
     @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+        <div class="alert alert-danger rounded-4">{{ session('error') }}</div>
     @endif
+
+    <!-- Summary Pendapatan Hari Ini -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-success">
+                <span class="text-muted small fw-bold">TOTAL OMSET HARI INI</span>
+                <h4 class="fw-bolder text-success mb-1">Rp {{ number_format($todaySummary['total'] ?? 0, 0, ',', '.') }}</h4>
+                <small class="text-muted">{{ $todaySummary['count'] ?? 0 }} Transaksi Lunas</small>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-primary">
+                <span class="text-muted small fw-bold">DARI POS KASIR</span>
+                <h5 class="fw-bold text-primary mb-1">Rp {{ number_format($todaySummary['pos'] ?? 0, 0, ',', '.') }}</h5>
+                <small class="text-muted">{{ $todaySummary['pos_count'] ?? 0 }} Transaksi Kasir</small>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-warning">
+                <span class="text-muted small fw-bold">DARI QR SELF-ORDER</span>
+                <h5 class="fw-bold text-warning-emphasis mb-1">Rp {{ number_format($todaySummary['qr'] ?? 0, 0, ',', '.') }}</h5>
+                <small class="text-muted">{{ $todaySummary['qr_count'] ?? 0 }} Transaksi Meja</small>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-info">
+                <span class="text-muted small fw-bold">RINCIAN METODE</span>
+                <div class="small mt-1">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Cash:</span>
+                        <span class="fw-bold">Rp {{ number_format($todaySummary['cash'] ?? 0, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">QRIS:</span>
+                        <span class="fw-bold">Rp {{ number_format($todaySummary['qris'] ?? 0, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Form Filter -->
     <form method="GET" action="{{ route('pos.history') }}" class="row g-3 mb-4 align-items-end bg-white p-3 rounded-3 shadow-sm border-0 mx-0">
@@ -80,7 +123,17 @@
                     @forelse($transactions as $trx)
                     <tr>
                         <td class="px-4">{{ $trx->created_at->format('d/m/Y H:i') }}</td>
-                        <td><span class="badge bg-secondary">{{ $trx->transaction_number ?? '-' }}</span></td>
+                        <td>
+                            <span class="badge bg-secondary font-monospace">{{ $trx->transaction_number ?? '-' }}</span>
+                            <div class="mt-1 d-flex gap-1 flex-wrap">
+                                @if($trx->order_source === 'qr')
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle" style="font-size: 11px;"><i class="bi bi-qr-code me-1"></i>QR Meja</span>
+                                @else
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 11px;"><i class="bi bi-shop me-1"></i>POS</span>
+                                @endif
+                                <span class="badge bg-light text-dark border" style="font-size: 11px;">{{ $trx->payment_method ?? 'Cash' }}</span>
+                            </div>
+                        </td>
                         <td>{{ $trx->table_number }}</td>
                         <td>{{ $trx->customer_name }}</td>
                         <td>Rp {{ number_format($trx->total, 0, ',', '.') }}</td>

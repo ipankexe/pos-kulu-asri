@@ -28,6 +28,26 @@ class AdminController extends Controller
         $voidQuery = VoidLog::query();
         $voidQuery = $this->applyFilter($voidQuery, $filter, $customDate);
         $totalVoid = $voidQuery->count();
+
+        // Statistik Kanal Order (POS vs QR)
+        $posQuery = Transaction::where('status', 'paid')->where('order_source', 'pos');
+        $posQuery = $this->applyFilter($posQuery, $filter, $customDate);
+        $posTrxCount = $posQuery->count();
+        $posRevenue = $posQuery->sum('total');
+
+        $qrQuery = Transaction::where('status', 'paid')->where('order_source', 'qr');
+        $qrQuery = $this->applyFilter($qrQuery, $filter, $customDate);
+        $qrTrxCount = $qrQuery->count();
+        $qrRevenue = $qrQuery->sum('total');
+
+        // Statistik Status Pembayaran
+        $pendingQuery = Transaction::where('payment_status', 'pending');
+        $pendingQuery = $this->applyFilter($pendingQuery, $filter, $customDate);
+        $totalPending = $pendingQuery->count();
+
+        $failedQuery = Transaction::whereIn('payment_status', ['failed', 'expired']);
+        $failedQuery = $this->applyFilter($failedQuery, $filter, $customDate);
+        $totalFailed = $failedQuery->count();
         
         $lowStock = Product::whereColumn('stock', '<=', 'min_stock')->get();
         
@@ -160,7 +180,8 @@ class AdminController extends Controller
             'totalSales', 'totalTransactions', 'totalVoid', 'lowStock', 'topProducts', 'profit', 
             'chartLabels', 'chartData', 'filter', 'customDate',
             'todayTotal', 'yesterdayTotal', 'todayVsYesterdayDiff', 'todayVsYesterdayPercent', 'todayHourly', 'yesterdayHourly',
-            'thisMonthTotal', 'lastMonthTotal', 'thisMonthVsLastMonthDiff', 'thisMonthVsLastMonthPercent', 'thisMonthDailyValues', 'lastMonthDailyValues', 'monthLabels'
+            'thisMonthTotal', 'lastMonthTotal', 'thisMonthVsLastMonthDiff', 'thisMonthVsLastMonthPercent', 'thisMonthDailyValues', 'lastMonthDailyValues', 'monthLabels',
+            'posTrxCount', 'posRevenue', 'qrTrxCount', 'qrRevenue', 'totalPending', 'totalFailed'
         ));
     }
 
@@ -192,19 +213,29 @@ class AdminController extends Controller
     {
         $filter = $request->get('filter', 'all');
         $customDate = $request->get('custom_date');
+        $source = $request->get('source', 'all');
         $query = Transaction::with(['user', 'details.product', 'voidLog'])->orderBy('created_at', 'desc');
         $query = $this->applyFilter($query, $filter, $customDate);
+
+        if ($source !== 'all') {
+            $query->where('order_source', $source);
+        }
         
-        $transactions = $query->paginate(20)->appends(['filter' => $filter, 'custom_date' => $customDate]);
-        return view('admin.reports', compact('transactions', 'filter', 'customDate'));
+        $transactions = $query->paginate(20)->appends(['filter' => $filter, 'custom_date' => $customDate, 'source' => $source]);
+        return view('admin.reports', compact('transactions', 'filter', 'customDate', 'source'));
     }
 
     public function exportReports(\Illuminate\Http\Request $request)
     {
         $filter = $request->get('filter', 'all');
         $customDate = $request->get('custom_date');
+        $source = $request->get('source', 'all');
         $query = Transaction::with('user')->where('status', 'paid')->orderBy('created_at', 'desc');
         $query = $this->applyFilter($query, $filter, $customDate);
+
+        if ($source !== 'all') {
+            $query->where('order_source', $source);
+        }
         $transactions = $query->get();
         
         $headers = [
@@ -225,7 +256,7 @@ class AdminController extends Controller
             fputs($file, "sep=,\n");
             $separator = ','; 
 
-            fputcsv($file, ['Tanggal', 'No TRX', 'Kasir', 'Pelanggan', 'Meja', 'Metode Bayar', 'Diskon', 'Total Tagihan'], $separator);
+            fputcsv($file, ['Tanggal', 'No TRX', 'Kanal Order', 'Kasir', 'Pelanggan', 'Meja', 'Metode Bayar', 'Diskon', 'Total Tagihan'], $separator);
             
             $totalRevenue = 0;
             $totalDiscount = 0;
@@ -234,9 +265,10 @@ class AdminController extends Controller
                 $totalRevenue += $trx->total;
                 $totalDiscount += $trx->discount;
                 fputcsv($file, [
-                    $trx->created_at->format('d/m/Y H:i'), // Formatting as string so it doesn't get messed up
+                    $trx->created_at->format('d/m/Y H:i'),
                     $trx->transaction_number,
-                    $trx->user->name ?? 'Kasir',
+                    strtoupper($trx->order_source ?? 'POS'),
+                    $trx->user->name ?? ($trx->isQr() ? 'Self-Order (QR)' : 'Kasir'),
                     $trx->customer_name,
                     $trx->table_number,
                     $trx->payment_method,
@@ -245,8 +277,8 @@ class AdminController extends Controller
                 ], $separator);
             }
 
-            fputcsv($file, ['', '', '', '', '', '', '', ''], $separator);
-            fputcsv($file, ['TOTAL KESELURUHAN', '', '', '', '', '', $totalDiscount, $totalRevenue], $separator);
+            fputcsv($file, ['', '', '', '', '', '', '', '', ''], $separator);
+            fputcsv($file, ['TOTAL KESELURUHAN', '', '', '', '', '', '', $totalDiscount, $totalRevenue], $separator);
 
             fclose($file);
         };
@@ -258,11 +290,16 @@ class AdminController extends Controller
     {
         $filter = $request->get('filter', 'all');
         $customDate = $request->get('custom_date');
+        $source = $request->get('source', 'all');
         $query = Transaction::with('user')->where('status', 'paid')->orderBy('created_at', 'desc');
         $query = $this->applyFilter($query, $filter, $customDate);
+
+        if ($source !== 'all') {
+            $query->where('order_source', $source);
+        }
         $transactions = $query->get();
         
-        return view('admin.reports_pdf', compact('transactions', 'filter', 'customDate'));
+        return view('admin.reports_pdf', compact('transactions', 'filter', 'customDate', 'source'));
     }
 
 

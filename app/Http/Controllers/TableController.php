@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\DiningTable;
+use Illuminate\Support\Str;
 
 class TableController extends Controller
 {
@@ -21,10 +22,12 @@ class TableController extends Controller
 
         DiningTable::create([
             'name' => $request->name,
-            'status' => 'available'
+            'status' => 'available',
+            'qr_token' => Str::random(32),
+            'is_active' => true
         ]);
 
-        return redirect()->route('tables.index')->with('success', 'Meja berhasil ditambahkan.');
+        return redirect()->route('tables.index')->with('success', 'Meja baru dan QR Code berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
@@ -51,5 +54,41 @@ class TableController extends Controller
 
         $table->delete();
         return redirect()->route('tables.index')->with('success', 'Meja berhasil dihapus.');
+    }
+
+    /**
+     * Regenerate token QR unik meja
+     */
+    public function regenerateQr($id)
+    {
+        $table = DiningTable::findOrFail($id);
+        $table->update([
+            'qr_token' => Str::random(32)
+        ]);
+
+        return redirect()->route('tables.index')->with('success', "QR Code untuk {$table->name} berhasil diperbarui (token baru telah aktif).");
+    }
+
+    /**
+     * Toggle status aktif meja
+     */
+    public function toggleActive($id)
+    {
+        $table = DiningTable::findOrFail($id);
+        $table->update([
+            'is_active' => !$table->is_active
+        ]);
+
+        $statusStr = $table->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        return redirect()->route('tables.index')->with('success', "Meja {$table->name} berhasil {$statusStr}.");
+    }
+
+    /**
+     * Tampilkan halaman printable QR Meja Kulu Asri
+     */
+    public function printQr($id)
+    {
+        $table = DiningTable::findOrFail($id);
+        return view('admin.print_qr', compact('table'));
     }
 }

@@ -21,3 +21,10 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Antigravity & local docs
+/.agents
+/diagrams_output
+*.pdf
+chart_*.png
+struktur_database.md

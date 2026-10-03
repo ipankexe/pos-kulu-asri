@@ -7,7 +7,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -52,26 +52,31 @@
             position: relative;
             z-index: 2;
             text-align: center;
+            max-width: 1200px;
+            width: 100%;
+            padding: 0 20px;
         }
         .action-btn {
-            width: 250px;
-            height: 250px;
-            border-radius: 30px;
+            width: 235px;
+            height: 235px;
+            border-radius: 28px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             font-weight: 700;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             text-decoration: none;
         }
-        .action-btn i { font-size: 5rem; margin-bottom: 15px; }
+        .action-btn i { font-size: 4.5rem; margin-bottom: 12px; }
         .action-btn:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 25px 45px rgba(0,0,0,0.15); }
         .btn-order-menu { background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); color: white; }
         .btn-order-taker { background: linear-gradient(135deg, #ff9800 0%, #ef6c00 100%); color: white; }
+        .btn-order-qr { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; }
+        .btn-income-today { background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; }
 
         /* Products Area */
         .products-area { flex: 7; padding: 25px; overflow-y: auto; background: transparent; }
@@ -134,6 +139,8 @@
         
         .form-control-custom { border-radius: 12px; border: 2px solid #eee; padding: 10px 15px; font-weight: 500; }
         .form-control-custom:focus { border-color: #2e7d32; box-shadow: 0 0 0 0.25rem rgba(46, 125, 50, 0.1); }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .bi-spin { display: inline-block; animation: spin 0.8s linear infinite; }
     </style>
 </head>
 <body>
@@ -145,7 +152,10 @@
             <div class="bg-brand-green rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
                 <i class="bi bi-shop fs-4 text-white"></i>
             </div>
-            <h3 class="m-0 fw-bold text-brand-green" style="letter-spacing: -0.5px;">Kulu Asri <span class="text-brand-orange">POS</span></h3>
+            <div>
+                <h3 class="m-0 fw-bold text-brand-green" style="letter-spacing: -0.5px; line-height: 1.1;">Kulu Asri <span class="text-brand-orange">POS</span></h3>
+                <small style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #b45309; font-weight: 700; font-size: 11.5px; display: block; margin-top: 2px;">Kulu Asri - Jagonya Ikan Bakar!</small>
+            </div>
             
             <!-- Home button (hidden on welcome screen) -->
             <button class="btn btn-outline-secondary rounded-pill ms-3 shadow-sm d-none" id="btn-home" onclick="goHome()">
@@ -153,6 +163,10 @@
             </button>
         </div>
         <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-warning fw-bold rounded-pill px-3 shadow-sm position-relative" onclick="showQrOrdersModal()">
+                <i class="bi bi-qr-code-scan me-1"></i> Pesanan QR
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" id="qrOrdersBadge">0</span>
+            </button>
             <button class="btn btn-outline-danger fw-bold rounded-pill px-4 shadow-sm" onclick="showEodModal()">
                 <i class="bi bi-door-closed me-2"></i> Tutup Toko
             </button>
@@ -176,7 +190,7 @@
     <div class="welcome-screen" id="welcome-screen">
         <div class="welcome-content">
             <h2 class="fw-bold mb-5" style="color: #2e7d32; font-size: 2.5rem; text-shadow: 0 2px 10px rgba(0,0,0,0.05);">Pilih Aktivitas Kasir</h2>
-            <div class="d-flex gap-5 justify-content-center">
+            <div class="d-flex gap-4 justify-content-center flex-wrap">
                 <button class="action-btn btn-order-menu" onclick="openMode('order')">
                     <i class="bi bi-journal-plus"></i>
                     <span>Pesanan Baru</span>
@@ -186,6 +200,18 @@
                     <i class="bi bi-wallet2"></i>
                     <span>Kasir / Pembayaran</span>
                     <small class="fs-6 fw-normal mt-2 opacity-75">Pembayaran / Kasir</small>
+                </button>
+                <button class="action-btn btn-order-qr position-relative" onclick="showQrOrdersModal()">
+                    <span class="position-absolute top-0 end-0 m-3 badge rounded-pill bg-danger fs-6 d-none" id="qrBadgeBig">0</span>
+                    <i class="bi bi-qr-code-scan"></i>
+                    <span>Pesanan QR</span>
+                    <small class="fs-6 fw-normal mt-2 opacity-75">Order Masuk dari Meja</small>
+                </button>
+                <button class="action-btn btn-income-today position-relative" onclick="showTodayIncomeModal()">
+                    <span class="position-absolute top-0 end-0 m-3 badge rounded-pill bg-white text-dark fw-bold shadow-sm" id="welcomeTodayIncomeBadge" style="font-size: 0.85rem;">Rp 0</span>
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Pendapatan Hari Ini</span>
+                    <small class="fs-6 fw-normal mt-2 opacity-75" id="welcomeTodayIncomeSub">Lacak Pemasukan Hari Ini</small>
                 </button>
             </div>
         </div>
@@ -381,6 +407,198 @@
     </div>
 </div>
 
+<!-- Modal Pesanan QR Masuk -->
+<div class="modal fade" id="qrOrdersModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-info bg-opacity-10 rounded-top-4 p-4 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-qr-code-scan fs-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="modal-title fw-bold text-dark m-0">Pesanan Masuk QR Meja</h4>
+                        <small class="text-muted">Pantau, proses ke dapur, dan selesaikan pesanan pelanggan self-order</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="loadQrOrders()">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Segarkan
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <!-- Filter Pills -->
+                <div class="d-flex gap-2 mb-3">
+                    <button class="btn btn-sm btn-dark rounded-pill px-3 qr-filter active" onclick="filterQrOrdersList('all', this)">Semua (<span id="qrCountAll">0</span>)</button>
+                    <button class="btn btn-sm btn-outline-warning rounded-pill px-3 qr-filter" onclick="filterQrOrdersList('confirmed', this)">Perlu Dimasak (<span id="qrCountNew">0</span>)</button>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 qr-filter" onclick="filterQrOrdersList('preparing', this)">Sedang Dimasak (<span id="qrCountCook">0</span>)</button>
+                    <button class="btn btn-sm btn-outline-success rounded-pill px-3 qr-filter" onclick="filterQrOrdersList('ready', this)">Siap Saji (<span id="qrCountReady">0</span>)</button>
+                </div>
+
+                <!-- Grid of Orders -->
+                <div class="row g-3" id="qrOrdersGrid" style="max-height: 60vh; overflow-y: auto;">
+                    <!-- Rendered via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Pelacakan Pendapatan Masuk Hari Ini -->
+<div class="modal fade" id="todayIncomeModal" tabindex="-1" aria-labelledby="todayIncomeModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <!-- Modal Header -->
+            <div class="modal-header border-0 bg-success bg-opacity-10 p-4 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 46px; height: 46px;">
+                        <i class="bi bi-cash-coin fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <h4 class="modal-title fw-bold text-dark m-0" id="todayIncomeModalTitle">Pelacakan Pendapatan Masuk Hari Ini</h4>
+                            <span class="badge bg-success rounded-pill px-3 py-1" id="incomeModalDate">Hari Ini</span>
+                        </div>
+                        <small class="text-muted" style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #b45309 !important; font-weight: 700;">
+                            Kulu Asri - Jagonya Ikan Bakar! &bull; Rincian transaksi masuk dari POS Kasir & QR Meja
+                        </small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-success btn-sm rounded-pill px-3 shadow-sm" onclick="fetchTodayIncome(false)" title="Segarkan Data Realtime">
+                        <i class="bi bi-arrow-clockwise me-1" id="incomeRefreshIcon"></i> Segarkan
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <div class="modal-body p-4 bg-light">
+                <!-- Summary KPI Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white border-start border-4 border-success">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="text-muted small fw-bold">TOTAL OMSET HARI INI</span>
+                                <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1"><i class="bi bi-graph-up-arrow me-1"></i><span id="cardTotalCount">0</span> TRX</span>
+                            </div>
+                            <h3 class="fw-bolder text-success m-0" id="cardTotalRevenue" style="letter-spacing: -0.5px;">Rp 0</h3>
+                            <small class="text-muted mt-1 d-block" style="font-size: 11px;">Semua transaksi berstatus lunas</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white border-start border-4 border-primary">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="text-muted small fw-bold">DARI POS KASIR</span>
+                                <span class="badge bg-primary-subtle text-primary rounded-pill px-2 py-1"><span id="cardPosCount">0</span> TRX</span>
+                            </div>
+                            <h4 class="fw-bold text-primary m-0" id="cardPosRevenue">Rp 0</h4>
+                            <small class="text-muted mt-1 d-block" style="font-size: 11px;">Pesanan langsung via kasir</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white border-start border-4 border-warning">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="text-muted small fw-bold">DARI QR SELF-ORDER</span>
+                                <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-2 py-1"><span id="cardQrCount">0</span> TRX</span>
+                            </div>
+                            <h4 class="fw-bold text-warning-emphasis m-0" id="cardQrRevenue">Rp 0</h4>
+                            <small class="text-muted mt-1 d-block" style="font-size: 11px;">Pesanan scan QR di meja pelanggan</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white border-start border-4 border-info">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="text-muted small fw-bold">METODE PEMBAYARAN</span>
+                                <i class="bi bi-wallet2 text-info"></i>
+                            </div>
+                            <div class="d-flex flex-column gap-1 small mt-1">
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted"><i class="bi bi-cash me-1 text-success"></i> Tunai (Cash):</span>
+                                    <span class="fw-bold text-dark" id="cardCashTotal">Rp 0</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted"><i class="bi bi-qr-code me-1 text-primary"></i> QRIS/Gateway:</span>
+                                    <span class="fw-bold text-dark" id="cardQrisTotal">Rp 0</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted"><i class="bi bi-credit-card me-1 text-secondary"></i> Debit:</span>
+                                    <span class="fw-bold text-dark" id="cardDebitTotal">Rp 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Controls & Search -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3 bg-white p-3 rounded-4 shadow-sm">
+                    <!-- Filter Pills -->
+                    <div class="d-flex flex-wrap gap-2" id="incomeFilterPills">
+                        <button class="btn btn-sm btn-dark rounded-pill px-3 income-filter active" onclick="filterIncomeList('all', this)">
+                            Semua Transaksi (<span id="filterCountAll">0</span>)
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3 income-filter" onclick="filterIncomeList('pos', this)">
+                            <i class="bi bi-shop me-1"></i> POS Kasir (<span id="filterCountPos">0</span>)
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning rounded-pill px-3 income-filter" onclick="filterIncomeList('qr', this)">
+                            <i class="bi bi-qr-code-scan me-1"></i> QR Meja (<span id="filterCountQr">0</span>)
+                        </button>
+                        <button class="btn btn-sm btn-outline-success rounded-pill px-3 income-filter" onclick="filterIncomeList('Cash', this)">
+                            <i class="bi bi-cash me-1"></i> Tunai (<span id="filterCountCash">0</span>)
+                        </button>
+                        <button class="btn btn-sm btn-outline-info rounded-pill px-3 income-filter" onclick="filterIncomeList('QRIS', this)">
+                            <i class="bi bi-qr-code me-1"></i> QRIS (<span id="filterCountQris">0</span>)
+                        </button>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="position-relative" style="min-width: 260px;">
+                        <i class="bi bi-search position-absolute text-muted" style="left: 12px; top: 9px;"></i>
+                        <input type="text" class="form-control form-control-sm rounded-pill ps-5 border-secondary-subtle" id="incomeSearchInput" placeholder="Cari No. TRX, nama, meja..." onkeyup="searchIncomeList(this.value)">
+                    </div>
+                </div>
+
+                <!-- Transaction List Table / Grid -->
+                <div class="bg-white rounded-4 shadow-sm overflow-hidden" style="max-height: 50vh; overflow-y: auto;">
+                    <div class="table-responsive m-0">
+                        <table class="table table-hover align-middle mb-0" id="incomeTransactionsTable">
+                            <thead class="table-light text-muted small text-uppercase" style="letter-spacing: 0.5px;">
+                                <tr>
+                                    <th class="ps-4">Jam</th>
+                                    <th>No. Transaksi</th>
+                                    <th>Meja / Pelanggan</th>
+                                    <th>Kanal Order</th>
+                                    <th>Metode Bayar</th>
+                                    <th>Detail Menu Dipesan</th>
+                                    <th class="text-end">Nominal Masuk</th>
+                                    <th class="text-center pe-4">Struk</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incomeTransactionsTbody">
+                                <tr>
+                                    <td colspan="8" class="text-center py-5 text-muted">
+                                        <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+                                        Memuat data pendapatan masuk hari ini...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer border-0 p-3 px-4 bg-white d-flex justify-content-between">
+                <a href="{{ route('pos.history') }}" class="btn btn-outline-secondary rounded-pill px-3">
+                    <i class="bi bi-clock-history me-1"></i> Buka Riwayat Transaksi Lengkap (Semua Tanggal)
+                </a>
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Tutup Toko (EOD) -->
 <div class="modal fade" id="eodModal" tabindex="-1">
     <!-- EOD Modal Content (Same as before) -->
@@ -507,6 +725,22 @@
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
     }
 
+    // Keamanan (anti-XSS): data dari server/pelanggan (nama, catatan, dll) WAJIB di-escape
+    // sebelum dimasukkan ke innerHTML / template literal.
+    function esc(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // Untuk argumen string di dalam atribut onclick="fn(...)": hasilnya sudah termasuk tanda kutip.
+    function jsArg(value) {
+        return esc(JSON.stringify(String(value ?? '')));
+    }
+
     // --- NEW NAVIGATION LOGIC ---
     function openMode(mode) {
         currentMode = mode;
@@ -571,19 +805,19 @@
                     if(t.status === 'available') {
                         html += `
                         <div class="col-md-3 col-4">
-                            <button class="btn btn-outline-success w-100 py-3 fw-bold rounded-4 shadow-sm" onclick="selectTable('${t.name}', false, 'order')">
+                            <button class="btn btn-outline-success w-100 py-3 fw-bold rounded-4 shadow-sm" onclick="selectTable(${jsArg(t.name)}, false, 'order')">
                                 <i class="bi bi-check-circle d-block fs-2 mb-2"></i>
-                                ${t.name}<br><small>Tersedia</small>
+                                ${esc(t.name)}<br><small>Tersedia</small>
                             </button>
                         </div>`;
                     } else {
                         html += `
                         <div class="col-md-3 col-4 position-relative">
-                            <button class="btn btn-warning w-100 py-3 fw-bold rounded-4 shadow-sm text-dark" onclick="selectTable('${t.name}', true, 'order')">
+                            <button class="btn btn-warning w-100 py-3 fw-bold rounded-4 shadow-sm text-dark" onclick="selectTable(${jsArg(t.name)}, true, 'order')">
                                 <i class="bi bi-person-fill d-block fs-2 mb-2"></i>
-                                ${t.name}<br><small>Terisi (Tambah)</small>
+                                ${esc(t.name)}<br><small>Terisi (Tambah)</small>
                             </button>
-                            <button class="btn btn-danger btn-sm position-absolute rounded-circle shadow" style="top: 5px; right: 20px;" onclick="event.stopPropagation(); freeTableManual(${t.id}, '${t.name}')" title="Kosongkan Meja">
+                            <button class="btn btn-danger btn-sm position-absolute rounded-circle shadow" style="top: 5px; right: 20px;" onclick="event.stopPropagation(); freeTableManual(${Number(t.id)}, ${jsArg(t.name)})" title="Kosongkan Meja">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>`;
@@ -600,11 +834,19 @@
                         html = '<div class="col-12 text-center py-5"><i class="bi bi-check2-circle text-success fs-1"></i><h5 class="mt-3">Tidak ada antrean pesanan yang belum dibayar.</h5></div>';
                     } else {
                         activeTransactions.forEach(t => {
-                            let displayName = t.table_number === 'Takeaway' ? `Takeaway<br><small>${t.customer_name}</small>` : `Meja ${t.table_number}`;
+                            let displayName = t.table_number === 'Takeaway' ? `Takeaway<br><small>${esc(t.customer_name)}</small>` : `Meja ${esc(t.table_number)}`;
+                            let isQr = t.order_source === 'qr';
+                            let isPaid = t.payment_status === 'paid' || t.status === 'paid';
+                            let btnClass = isPaid ? 'btn-success' : 'btn-danger';
+                            let badgeText = isQr ? (isPaid ? 'QR LUNAS' : 'QR PENDING') : 'POS KASIR';
+                            let badgeClass = isPaid ? 'bg-light text-success' : 'bg-dark text-white';
+                            let icon = isPaid ? 'bi-check2-circle' : 'bi-currency-dollar';
+
                             html += `
                             <div class="col-md-3 col-4">
-                                <button class="btn btn-danger w-100 py-3 fw-bold rounded-4 shadow-sm text-white" onclick="selectTransaction(${t.id}, '${t.table_number}')">
-                                    <i class="bi bi-currency-dollar d-block fs-2 mb-2"></i>
+                                <button class="btn ${btnClass} w-100 py-3 fw-bold rounded-4 shadow-sm text-white position-relative" onclick="selectTransaction(${Number(t.id)}, ${jsArg(t.table_number)})">
+                                    <span class="badge ${badgeClass} position-absolute top-0 end-0 m-2 fw-bold" style="font-size: 10px;">${badgeText}</span>
+                                    <i class="bi ${icon} d-block fs-2 mb-2"></i>
                                     ${displayName}
                                 </button>
                             </div>`;
@@ -654,13 +896,23 @@
                 renderCheckoutItems();
                 
                 document.getElementById('checkout-diskon').value = 0;
-                document.getElementById('checkout-metode').value = 'Cash';
-                document.getElementById('checkout-uang').value = '';
-                document.getElementById('checkout-uang').disabled = false;
-                document.getElementById('checkout-kembalian').innerText = 'Rp 0';
-                document.getElementById('checkout-kembalian').classList.remove('text-danger');
-                document.getElementById('checkout-kembalian').classList.add('text-primary');
-                setTimeout(() => document.getElementById('checkout-uang').focus(), 500);
+                
+                if (data.transaction.status === 'paid' || data.transaction.payment_status === 'paid') {
+                    document.getElementById('checkout-metode').value = data.transaction.payment_method || 'QRIS';
+                    document.getElementById('checkout-uang').value = data.transaction.total;
+                    document.getElementById('checkout-uang').disabled = true;
+                    document.getElementById('checkout-kembalian').innerText = 'LUNAS (ONLINE)';
+                    document.getElementById('checkout-kembalian').classList.remove('text-danger');
+                    document.getElementById('checkout-kembalian').classList.add('text-success');
+                } else {
+                    document.getElementById('checkout-metode').value = 'Cash';
+                    document.getElementById('checkout-uang').value = '';
+                    document.getElementById('checkout-uang').disabled = false;
+                    document.getElementById('checkout-kembalian').innerText = 'Rp 0';
+                    document.getElementById('checkout-kembalian').classList.remove('text-danger');
+                    document.getElementById('checkout-kembalian').classList.add('text-primary');
+                    setTimeout(() => document.getElementById('checkout-uang').focus(), 500);
+                }
             }
         } catch(e) {
             Swal.fire('Error', 'Gagal mengambil detail pesanan.', 'error');
@@ -673,7 +925,7 @@
 
         if (isOccupied && name !== 'Takeaway') {
             try {
-                let res = await fetch(`/pos/active-order/${name}`);
+                let res = await fetch(`/pos/active-order/${encodeURIComponent(name)}`);
                 let data = await res.json();
                 if(data.success) {
                     currentTransactionId = data.transaction.id;
@@ -847,13 +1099,13 @@
                         <button type="button" class="qty-btn" onclick="updateQty(${item.id}, 1)"><i class="bi bi-plus"></i></button>
                        </div>`;
 
-                let notesControl = `<div class="mt-1"><input type="text" class="form-control form-control-sm" placeholder="Catatan (opsional)" value="${item.notes || ''}" onchange="setNotes(${item.id}, this.value)"></div>`;
+                let notesControl = `<div class="mt-1"><input type="text" class="form-control form-control-sm" placeholder="Catatan (opsional)" value="${esc(item.notes || '')}" onchange="setNotes(${item.id}, this.value)"></div>`;
 
                 html += `
                     <div class="cart-item ${item.is_saved ? 'bg-light rounded-3 p-2 mb-2 border-0' : ''}" style="flex-direction: column; align-items: stretch;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div style="flex: 1;">
-                                <h6 class="mb-1 fw-bold ${item.is_saved ? 'text-muted' : 'text-dark'}">${item.name}</h6>
+                                <h6 class="mb-1 fw-bold ${item.is_saved ? 'text-muted' : 'text-dark'}">${esc(item.name)}</h6>
                                 <div class="text-brand-orange fw-semibold small">${formatRupiah(item.price)}</div>
                             </div>
                             ${qtyControls}
@@ -975,8 +1227,8 @@
             orderItemsHtml += `
                 <tr>
                     <td>
-                        <div class="fw-bold text-dark">${item.name}</div>
-                        ${item.notes ? `<div class="text-muted small">Catatan: ${item.notes}</div>` : ''}
+                        <div class="fw-bold text-dark">${esc(item.name)}</div>
+                        ${item.notes ? `<div class="text-muted small">Catatan: ${esc(item.notes)}</div>` : ''}
                     </td>
                     <td class="align-middle">
                         <div class="d-flex align-items-center justify-content-center">
@@ -1127,6 +1379,7 @@
                 
                 printInIframe('/pos/receipt/' + data.transaction_id);
                 
+                fetchTodayIncome(false);
                 goHome(); // Back to main screen
             } else {
                 Swal.fire('Gagal', data.message, 'error');
@@ -1174,6 +1427,454 @@
             }
         }
     });
+
+    // --- QR ORDER MANAGEMENT & LIVE SYNC ---
+    const qrOrdersModal = new bootstrap.Modal(document.getElementById('qrOrdersModal'));
+    let currentQrOrdersList = [];
+    let lastQrOrderCount = 0;
+
+    function showQrOrdersModal() {
+        qrOrdersModal.show();
+        loadQrOrders();
+    }
+
+    async function loadQrOrders() {
+        try {
+            const res = await fetch('{{ route("pos.incoming_qr") }}');
+            const data = await res.json();
+            if (data.success) {
+                currentQrOrdersList = data.orders;
+                renderQrOrdersGrid('all');
+                updateQrBadges(data.count);
+            }
+        } catch (e) {
+            console.error("Gagal memuat pesanan QR:", e);
+        }
+    }
+
+    function updateQrBadges(count) {
+        const badgeHeader = document.getElementById('qrOrdersBadge');
+        const badgeBig = document.getElementById('qrBadgeBig');
+
+        if (count > 0) {
+            if (badgeHeader) {
+                badgeHeader.innerText = count;
+                badgeHeader.classList.remove('d-none');
+            }
+            if (badgeBig) {
+                badgeBig.innerText = count + ' Baru';
+                badgeBig.classList.remove('d-none');
+            }
+        } else {
+            if (badgeHeader) badgeHeader.classList.add('d-none');
+            if (badgeBig) badgeBig.classList.add('d-none');
+        }
+
+        const countNew = currentQrOrdersList.filter(o => o.order_status === 'confirmed').length;
+        const countCook = currentQrOrdersList.filter(o => o.order_status === 'preparing').length;
+        const countReady = currentQrOrdersList.filter(o => o.order_status === 'ready').length;
+
+        const elAll = document.getElementById('qrCountAll');
+        const elNew = document.getElementById('qrCountNew');
+        const elCook = document.getElementById('qrCountCook');
+        const elReady = document.getElementById('qrCountReady');
+
+        if (elAll) elAll.innerText = currentQrOrdersList.length;
+        if (elNew) elNew.innerText = countNew;
+        if (elCook) elCook.innerText = countCook;
+        if (elReady) elReady.innerText = countReady;
+    }
+
+    function filterQrOrdersList(status, btn) {
+        document.querySelectorAll('.qr-filter').forEach(b => {
+            b.classList.remove('active', 'btn-dark');
+            b.classList.add('btn-outline-secondary');
+        });
+        btn.classList.add('active', 'btn-dark');
+        btn.classList.remove('btn-outline-secondary');
+
+        renderQrOrdersGrid(status);
+    }
+
+    function renderQrOrdersGrid(filterStatus) {
+        const grid = document.getElementById('qrOrdersGrid');
+        if (!grid) return;
+
+        let filtered = currentQrOrdersList;
+        if (filterStatus !== 'all') {
+            filtered = currentQrOrdersList.filter(o => o.order_status === filterStatus);
+        }
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="col-12 text-center py-5 text-muted">
+                    <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+                    <h6>Tidak ada pesanan QR untuk kategori ini.</h6>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        filtered.forEach(order => {
+            let statusBadge = '';
+            let actionButtons = '';
+
+            if (order.order_status === 'confirmed') {
+                statusBadge = '<span class="badge bg-warning text-dark"><i class="bi bi-clock-history me-1"></i> Baru (Perlu Dimasak)</span>';
+                actionButtons = `
+                    <button class="btn btn-primary btn-sm rounded-pill px-3 fw-bold" onclick="updateOrderStatusPos(${order.id}, 'preparing', true)">
+                        <i class="bi bi-fire me-1"></i> Mulai Masak & Cetak Dapur
+                    </button>
+                `;
+            } else if (order.order_status === 'preparing') {
+                statusBadge = '<span class="badge bg-info text-white"><i class="bi bi-fire me-1"></i> Sedang Dimasak</span>';
+                actionButtons = `
+                    <button class="btn btn-success btn-sm rounded-pill px-3 fw-bold" onclick="updateOrderStatusPos(${order.id}, 'ready')">
+                        <i class="bi bi-bell-fill me-1"></i> Tandai Siap Saji
+                    </button>
+                `;
+            } else if (order.order_status === 'ready') {
+                statusBadge = '<span class="badge bg-success"><i class="bi bi-check2-circle me-1"></i> Siap Disajikan</span>';
+                actionButtons = `
+                    <button class="btn btn-outline-success btn-sm rounded-pill px-3 fw-bold" onclick="updateOrderStatusPos(${order.id}, 'completed')">
+                        <i class="bi bi-check-lg me-1"></i> Selesaikan Pesanan
+                    </button>
+                `;
+            }
+
+            let itemsHtml = '';
+            order.details.forEach(d => {
+                itemsHtml += `
+                    <div class="d-flex justify-content-between py-1 border-bottom border-light small">
+                        <div>
+                            <strong>${Number(d.qty)}x</strong> ${esc(d.product ? d.product.name : 'Menu #' + d.product_id)}
+                            ${d.notes ? `<div class="badge bg-warning bg-opacity-25 text-dark ms-1 small">Ket: ${esc(d.notes)}</div>` : ''}
+                        </div>
+                        <div class="text-muted">${formatRupiah(d.price * d.qty)}</div>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="col-md-6 col-xl-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-1 rounded-pill mb-1">
+                                    <i class="bi bi-geo-alt-fill"></i> Meja ${esc(order.table_number)}
+                                </span>
+                                <h6 class="fw-bold m-0 text-dark">#${esc(order.transaction_number)}</h6>
+                                <small class="text-muted">Pemesan: ${esc(order.customer_name || 'Pelanggan')}</small>
+                            </div>
+                            <div class="text-end">
+                                ${statusBadge}
+                                <div class="badge bg-light text-success border mt-1 d-block">
+                                    <i class="bi bi-shield-check"></i> LUNAS (${esc(order.payment_method)})
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-2 bg-light rounded-3 my-2" style="max-height: 140px; overflow-y: auto;">
+                            ${itemsHtml}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted small">Total Tagihan:</span>
+                            <span class="fw-bold fs-6 text-primary">${formatRupiah(order.total)}</span>
+                        </div>
+
+                        <div class="d-flex gap-2 flex-wrap justify-content-between pt-2 border-top">
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="printInIframe('/pos/kitchen-ticket/' + ${order.id})" title="Cetak Karcis Dapur">
+                                    <i class="bi bi-printer me-1"></i> Dapur
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="printInIframe('/pos/receipt/' + ${order.id})" title="Cetak Struk">
+                                    <i class="bi bi-receipt"></i>
+                                </button>
+                            </div>
+                            <div>
+                                ${actionButtons}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        grid.innerHTML = html;
+    }
+
+    async function updateOrderStatusPos(id, status, printKitchen = false) {
+        try {
+            const res = await fetch(`/pos/orders/${id}/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ order_status: status })
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (printKitchen) {
+                    printInIframe('/pos/kitchen-ticket/' + id);
+                }
+                loadQrOrders();
+            }
+        } catch (e) {
+            Swal.fire('Error', 'Gagal memperbarui status order.', 'error');
+        }
+    }
+
+    // Audio Chime Synthesizer
+    function playAudioChime() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+            osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.5);
+        } catch(e) {}
+    }
+
+    // Polling Pesanan QR Otomatis Setiap 6 Detik
+    setInterval(async () => {
+        try {
+            const res = await fetch('{{ route("pos.incoming_qr") }}');
+            const data = await res.json();
+            if (data.success) {
+                currentQrOrdersList = data.orders;
+                updateQrBadges(data.count);
+
+                if (data.count > lastQrOrderCount) {
+                    playAudioChime();
+                    const toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                    toast.fire({
+                        icon: 'info',
+                        title: `Pesanan QR Baru Masuk (${data.count} Total)`
+                    });
+
+                    if (document.getElementById('qrOrdersModal').classList.contains('show')) {
+                        renderQrOrdersGrid('all');
+                    }
+                }
+                lastQrOrderCount = data.count;
+            }
+            // Realtime update header today income badge
+            fetchTodayIncome(false);
+        } catch (e) {}
+    }, 6000);
+
+    setTimeout(loadQrOrders, 1000);
+    setTimeout(() => fetchTodayIncome(false), 500);
+
+    // --- PELACAKAN PENDAPATAN HARI INI ---
+    let allTodayTransactions = [];
+    let currentIncomeFilter = 'all';
+    let currentIncomeSearch = '';
+
+    async function fetchTodayIncome(openModalAfterFetch = false) {
+        try {
+            const refreshIcon = document.getElementById('incomeRefreshIcon');
+            if (refreshIcon) refreshIcon.classList.add('bi-spin');
+
+            const res = await fetch('{{ route("pos.today_income") }}');
+            const data = await res.json();
+            
+            if (refreshIcon) refreshIcon.classList.remove('bi-spin');
+
+            if (data.success) {
+                // Update Welcome Screen Badge
+                const welcomeBadge = document.getElementById('welcomeTodayIncomeBadge');
+                if (welcomeBadge) {
+                    welcomeBadge.innerText = data.summary.total_revenue_formatted;
+                }
+                const welcomeSub = document.getElementById('welcomeTodayIncomeSub');
+                if (welcomeSub) {
+                    welcomeSub.innerText = data.summary.count > 0 
+                        ? `${data.summary.count} Transaksi Lunas` 
+                        : 'Lacak Pemasukan Hari Ini';
+                }
+
+                // Update Header Badge (if present)
+                const headerBadge = document.getElementById('headerTodayIncome');
+                if (headerBadge) {
+                    headerBadge.innerText = data.summary.total_revenue_formatted;
+                }
+
+                // Update Modal Cards
+                const modalDate = document.getElementById('incomeModalDate');
+                if (modalDate) modalDate.innerText = data.summary.date_formatted;
+                
+                const cardTotalRev = document.getElementById('cardTotalRevenue');
+                if (cardTotalRev) cardTotalRev.innerText = data.summary.total_revenue_formatted;
+                
+                const cardTotalCnt = document.getElementById('cardTotalCount');
+                if (cardTotalCnt) cardTotalCnt.innerText = data.summary.count;
+                
+                const cardPosRev = document.getElementById('cardPosRevenue');
+                if (cardPosRev) cardPosRev.innerText = formatRupiah(data.summary.pos_revenue);
+                
+                const cardPosCnt = document.getElementById('cardPosCount');
+                if (cardPosCnt) cardPosCnt.innerText = data.summary.pos_count;
+                
+                const cardQrRev = document.getElementById('cardQrRevenue');
+                if (cardQrRev) cardQrRev.innerText = formatRupiah(data.summary.qr_revenue);
+                
+                const cardQrCnt = document.getElementById('cardQrCount');
+                if (cardQrCnt) cardQrCnt.innerText = data.summary.qr_count;
+                
+                const cardCash = document.getElementById('cardCashTotal');
+                if (cardCash) cardCash.innerText = formatRupiah(data.summary.cash_total);
+                
+                const cardQris = document.getElementById('cardQrisTotal');
+                if (cardQris) cardQris.innerText = formatRupiah(data.summary.qris_total);
+                
+                const cardDebit = document.getElementById('cardDebitTotal');
+                if (cardDebit) cardDebit.innerText = formatRupiah(data.summary.debit_total);
+
+                // Update Filter Badge Counts
+                const fAll = document.getElementById('filterCountAll');
+                if (fAll) fAll.innerText = data.summary.count;
+                const fPos = document.getElementById('filterCountPos');
+                if (fPos) fPos.innerText = data.summary.pos_count;
+                const fQr = document.getElementById('filterCountQr');
+                if (fQr) fQr.innerText = data.summary.qr_count;
+                const fCash = document.getElementById('filterCountCash');
+                if (fCash) fCash.innerText = data.summary.cash_count;
+                const fQris = document.getElementById('filterCountQris');
+                if (fQris) fQris.innerText = data.summary.qris_count;
+
+                allTodayTransactions = data.transactions;
+                renderTodayIncomeList();
+
+                if (openModalAfterFetch) {
+                    const modalEl = document.getElementById('todayIncomeModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modalInstance.show();
+                }
+            }
+        } catch (e) {
+            console.error('Gagal mengambil data pendapatan hari ini:', e);
+        }
+    }
+
+    function showTodayIncomeModal() {
+        const modalEl = document.getElementById('todayIncomeModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modalInstance.show();
+        fetchTodayIncome(false);
+    }
+
+    function filterIncomeList(filter, btn) {
+        currentIncomeFilter = filter;
+        document.querySelectorAll('.income-filter').forEach(b => {
+            b.classList.remove('active', 'btn-dark');
+        });
+        btn.classList.add('active', 'btn-dark');
+        renderTodayIncomeList();
+    }
+
+    function searchIncomeList(keyword) {
+        currentIncomeSearch = keyword.toLowerCase().trim();
+        renderTodayIncomeList();
+    }
+
+    function renderTodayIncomeList() {
+        const tbody = document.getElementById('incomeTransactionsTbody');
+        if (!tbody) return;
+
+        let filtered = allTodayTransactions.filter(trx => {
+            if (currentIncomeFilter === 'pos' && trx.order_source !== 'pos') return false;
+            if (currentIncomeFilter === 'qr' && trx.order_source !== 'qr') return false;
+            if (currentIncomeFilter === 'Cash' && trx.payment_method !== 'Cash') return false;
+            if (currentIncomeFilter === 'QRIS' && !['QRIS', 'Mock Gateway'].includes(trx.payment_method)) return false;
+
+            if (currentIncomeSearch) {
+                const searchStr = `${trx.transaction_number} ${trx.customer_name} ${trx.table_number} ${trx.items_summary}`.toLowerCase();
+                if (!searchStr.includes(currentIncomeSearch)) return false;
+            }
+
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="bi bi-wallet2 fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                            <h6 class="fw-bold text-dark">Tidak Ada Transaksi Masuk Ditemukan</h6>
+                            <small class="text-muted">Belum ada transaksi pembayaran lunas yang sesuai dengan filter ini.</small>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        filtered.forEach(trx => {
+            const isQr = trx.order_source === 'qr';
+            const channelBadge = isQr 
+                ? `<span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1"><i class="bi bi-qr-code-scan me-1"></i> QR Meja</span>` 
+                : `<span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2 py-1"><i class="bi bi-shop me-1"></i> POS Kasir</span>`;
+            
+            let methodBadgeClass = 'bg-secondary';
+            if (trx.payment_method === 'Cash') methodBadgeClass = 'bg-success text-white';
+            else if (['QRIS', 'Mock Gateway'].includes(trx.payment_method)) methodBadgeClass = 'bg-info text-dark';
+            else if (trx.payment_method === 'Debit') methodBadgeClass = 'bg-secondary text-white';
+
+            const methodBadge = `<span class="badge rounded-pill ${methodBadgeClass} px-2 py-1">${esc(trx.payment_method)}</span>`;
+
+            html += `
+                <tr>
+                    <td class="ps-4 fw-semibold text-muted" style="white-space: nowrap;">
+                        <i class="bi bi-clock me-1 small"></i>${esc(trx.time)}
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">${esc(trx.transaction_number)}</span>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">${esc(trx.table_number)}</div>
+                        <small class="text-muted"><i class="bi bi-person me-1"></i>${esc(trx.customer_name)}</small>
+                    </td>
+                    <td>${channelBadge}</td>
+                    <td>${methodBadge}</td>
+                    <td>
+                        <div class="text-truncate" style="max-width: 280px;" title="${esc(trx.items_summary)}">
+                            <span class="badge bg-secondary-subtle text-secondary me-1">${Number(trx.items_count)} item</span>
+                            <span class="small text-dark">${esc(trx.items_summary)}</span>
+                        </div>
+                    </td>
+                    <td class="text-end fw-bolder text-success fs-6" style="white-space: nowrap;">
+                        ${formatRupiah(trx.total)}
+                    </td>
+                    <td class="text-center pe-4" style="white-space: nowrap;">
+                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-1 shadow-sm" onclick="printInIframe('/pos/receipt/' + ${trx.id})" title="Cetak Ulang Struk">
+                            <i class="bi bi-receipt me-1"></i> Struk
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
 </script>
 </body>
 </html>

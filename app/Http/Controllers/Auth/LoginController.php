@@ -28,6 +28,16 @@ class LoginController extends Controller
     protected $redirectTo = '/home';
 
     /**
+     * Setelah login selalu masuk ke /home (bukan URL terakhir yang dicoba / intended),
+     * lalu /home yang menentukan tujuan sesuai role (admin → dashboard, kasir → POS).
+     */
+    protected function authenticated(\Illuminate\Http\Request $request, $user)
+    {
+        $request->session()->forget('url.intended');
+        return redirect()->route('home');
+    }
+
+    /**
      * Create a new controller instance.
      *
      * @return void

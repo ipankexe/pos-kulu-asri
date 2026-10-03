@@ -69,6 +69,9 @@ class PosController extends Controller
                     'transaction_number' => 'TRX-' . date('YmdHis') . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
                     'customer_name' => $request->customer_name,
                     'table_number' => $request->table_number,
+                    'order_source' => 'pos',
+                    'order_status' => 'confirmed',
+                    'payment_status' => 'pending',
                     'total' => 0,
                     'payment' => 0,
                     'change' => 0,
@@ -95,7 +98,7 @@ class PosController extends Controller
                 return [
                     'id' => $items[0]['id'],
                     'qty' => $items->sum('qty'),
-                    'price' => $items[0]['price'],
+                    'price' => $items[0]['price'] ?? 0,
                     'notes' => $allNotes ?: null
                 ];
             });
@@ -236,6 +239,8 @@ class PosController extends Controller
                 'payment' => $payment,
                 'change' => $change,
                 'status' => 'paid',
+                'order_status' => 'completed',
+                'payment_status' => 'paid',
                 'payment_method' => $request->payment_method,
                 'discount' => $discount
             ]);
@@ -244,6 +249,7 @@ class PosController extends Controller
             if ($table) {
                 $table->status = 'available';
                 $table->save();
+                \App\Models\OrderSession::where('dining_table_id', $table->id)->where('status', 'active')->update(['status' => 'closed']);
             }
 
             DB::commit();
@@ -324,7 +330,20 @@ class PosController extends Controller
 
     public function history(Request $request)
     {
-        $query = Transaction::with('user', 'voidLog');
+        $today = \Carbon\Carbon::today();
+        $todayPaidTrx = Transaction::whereDate('created_at', $today)->where('status', 'paid')->get();
+        $todaySummary = [
+            'total' => $todayPaidTrx->sum('total'),
+            'count' => $todayPaidTrx->count(),
+            'pos' => $todayPaidTrx->where('order_source', 'pos')->sum('total'),
+            'pos_count' => $todayPaidTrx->where('order_source', 'pos')->count(),
+            'qr' => $todayPaidTrx->where('order_source', 'qr')->sum('total'),
+            'qr_count' => $todayPaidTrx->where('order_source', 'qr')->count(),
+            'cash' => $todayPaidTrx->where('payment_method', 'Cash')->sum('total'),
+            'qris' => $todayPaidTrx->whereIn('payment_method', ['QRIS', 'Mock Gateway'])->sum('total'),
+        ];
+
+        $query = Transaction::with(['user', 'voidLog', 'details.product']);
 
         if ($request->filled('filter_type')) {
             $type = $request->filter_type;
@@ -344,7 +363,7 @@ class PosController extends Controller
         }
 
         $transactions = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
-        return view('pos.history', compact('transactions'));
+        return view('pos.history', compact('transactions', 'todaySummary'));
     }
 
     public function voidTransaction(Request $request, $id)
@@ -431,7 +450,18 @@ class PosController extends Controller
 
     public function getActiveTransactions()
     {
-        return response()->json(Transaction::with('user')->where('status', 'unpaid')->get());
+        $transactions = Transaction::with(['user', 'details.product'])
+            ->where(function($q) {
+                $q->where('status', 'unpaid')
+                  ->orWhere(function($sub) {
+                      $sub->where('order_source', 'qr')
+                          ->whereIn('order_status', ['paid', 'confirmed', 'preparing', 'ready']);
+                  });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($transactions);
     }
 
     public function getTransaction($id)
@@ -484,6 +514,149 @@ class PosController extends Controller
         
         $table->status = 'available';
         $table->save();
+
+        // Tutup sesi order aktif meja
+        \App\Models\OrderSession::where('dining_table_id', $table->id)->where('status', 'active')->update(['status' => 'closed']);
+
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Polling Pesanan Masuk dari Channel QR
+     */
+    public function getIncomingQrOrders()
+    {
+        $orders = Transaction::with(['details.product'])
+            ->where('order_source', 'qr')
+            ->whereIn('order_status', ['paid', 'confirmed', 'preparing', 'ready'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'count' => $orders->count(),
+            'orders' => $orders
+        ]);
+    }
+
+    /**
+     * Kasir Konfirmasi Pesanan QR (Mulai Masak)
+     */
+    public function confirmQrOrder($id)
+    {
+        $transaction = Transaction::findOrFail($id);
+        $transaction->update(['order_status' => 'preparing']);
+
+        return response()->json(['success' => true, 'order_status' => 'preparing']);
+    }
+
+    /**
+     * Update Status Order (preparing -> ready -> completed)
+     */
+    public function updateOrderStatus(Request $request, $id)
+    {
+        $newStatus = $request->order_status ?: $request->status;
+
+        if (!$newStatus || !in_array($newStatus, ['confirmed', 'preparing', 'ready', 'completed', 'cancelled'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Status pesanan tidak valid.'
+            ], 422);
+        }
+
+        $transaction = Transaction::findOrFail($id);
+        $transaction->update(['order_status' => $newStatus]);
+
+        if ($newStatus === 'completed') {
+            $table = DiningTable::where('name', $transaction->table_number)->first();
+            if ($table) {
+                $otherActive = Transaction::where('table_number', $table->name)
+                    ->where('id', '!=', $transaction->id)
+                    ->whereIn('order_status', ['confirmed', 'preparing', 'ready'])
+                    ->exists();
+
+                if (!$otherActive) {
+                    $table->update(['status' => 'available']);
+                    \App\Models\OrderSession::where('dining_table_id', $table->id)->where('status', 'active')->update(['status' => 'closed']);
+                }
+            }
+        }
+
+        return response()->json(['success' => true, 'order_status' => $newStatus]);
+    }
+
+    /**
+     * Lacak Pendapatan Masuk Hari Ini beserta rincian transaksi (POS Kasir & QR Meja)
+     */
+    public function getTodayIncome()
+    {
+        $today = \Carbon\Carbon::today();
+
+        $transactions = Transaction::with(['details.product', 'user'])
+            ->whereDate('created_at', $today)
+            ->where('status', 'paid')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $totalRevenue = (float) $transactions->sum('total');
+        $posRevenue = (float) $transactions->where('order_source', 'pos')->sum('total');
+        $qrRevenue = (float) $transactions->where('order_source', 'qr')->sum('total');
+
+        $cashTotal = (float) $transactions->where('payment_method', 'Cash')->sum('total');
+        $qrisTotal = (float) $transactions->whereIn('payment_method', ['QRIS', 'Mock Gateway'])->sum('total');
+        $debitTotal = (float) $transactions->where('payment_method', 'Debit')->sum('total');
+
+        $transactionList = $transactions->map(function ($trx) {
+            return [
+                'id' => $trx->id,
+                'transaction_number' => $trx->transaction_number ?: 'TRX-' . str_pad($trx->id, 5, '0', STR_PAD_LEFT),
+                'time' => $trx->created_at->format('H:i'),
+                'datetime' => $trx->created_at->format('d/m/Y H:i'),
+                'table_number' => $trx->table_number ?: 'Bawa Pulang',
+                'customer_name' => $trx->customer_name ?: 'Pelanggan',
+                'order_source' => $trx->order_source ?: 'pos',
+                'order_source_label' => ($trx->order_source === 'qr') ? 'QR Meja' : 'POS Kasir',
+                'payment_method' => $trx->payment_method ?: 'Cash',
+                'payment_status' => $trx->payment_status ?: 'paid',
+                'order_status' => $trx->order_status ?: 'completed',
+                'total' => (float) $trx->total,
+                'discount' => (float) ($trx->discount ?? 0),
+                'cashier_name' => $trx->user ? $trx->user->name : ($trx->order_source === 'qr' ? 'Self-Order' : 'Kasir'),
+                'items_count' => $trx->details->sum('qty'),
+                'items_summary' => $trx->details->map(function ($d) {
+                    return $d->qty . 'x ' . ($d->product ? $d->product->name : 'Item');
+                })->implode(', '),
+                'details' => $trx->details->map(function ($d) {
+                    return [
+                        'product_name' => $d->product ? $d->product->name : 'Item Terhapus',
+                        'qty' => $d->qty,
+                        'price' => (float) $d->price,
+                        'subtotal' => (float) ($d->qty * $d->price),
+                        'notes' => $d->notes ?: null
+                    ];
+                })
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'summary' => [
+                'date_formatted' => $today->translatedFormat('d F Y'),
+                'total_revenue' => $totalRevenue,
+                'total_revenue_formatted' => 'Rp ' . number_format($totalRevenue, 0, ',', '.'),
+                'count' => $transactions->count(),
+                'pos_revenue' => $posRevenue,
+                'pos_count' => $transactions->where('order_source', 'pos')->count(),
+                'qr_revenue' => $qrRevenue,
+                'qr_count' => $transactions->where('order_source', 'qr')->count(),
+                'cash_total' => $cashTotal,
+                'cash_count' => $transactions->where('payment_method', 'Cash')->count(),
+                'qris_total' => $qrisTotal,
+                'qris_count' => $transactions->whereIn('payment_method', ['QRIS', 'Mock Gateway'])->count(),
+                'debit_total' => $debitTotal,
+                'debit_count' => $transactions->where('payment_method', 'Debit')->count(),
+            ],
+            'transactions' => $transactionList
+        ]);
     }
 }

@@ -22,7 +22,19 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'cost_price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'description' => 'nullable|string|max:1000',
+            'image' => 'nullable|image|max:3072',
+            'image_url' => 'nullable|url|max:500',
         ]);
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('products', 'public');
+        } elseif ($request->filled('image_url')) {
+            $data['image'] = $request->input('image_url');
+        }
+
+        unset($data['image_url']);
+
         Product::create($data);
         return back()->with('success', 'Produk berhasil ditambahkan.');
     }
@@ -35,7 +47,19 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'cost_price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'description' => 'nullable|string|max:1000',
+            'image' => 'nullable|image|max:3072',
+            'image_url' => 'nullable|url|max:500',
         ]);
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('products', 'public');
+        } elseif ($request->filled('image_url')) {
+            $data['image'] = $request->input('image_url');
+        }
+
+        unset($data['image_url']);
+
         $product->update($data);
         return back()->with('success', 'Produk berhasil diperbarui.');
     }
