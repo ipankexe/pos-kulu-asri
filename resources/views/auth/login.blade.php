@@ -5,28 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <title>Login - POS Rumah Makan Kulu Asri</title>
+    <title>Login POS — Rumah Makan Kulu Asri</title>
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Design Tokens & Fonts -->
+    <link rel="stylesheet" href="{{ asset('css/design-tokens.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Bootstrap 5 CSS & Icons CDN -->
+    <!-- Bootstrap 5 CSS & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <style>
         :root {
-            --brand-green: #1b5e20;
-            --brand-green-light: #2e7d32;
-            --brand-orange: #d97706;
-            --brand-orange-light: #f59e0b;
+            --brand-green: var(--color-primary);
+            --brand-green-dark: var(--color-primary-dark);
+            --brand-amber: var(--color-accent);
         }
 
         body, html {
             height: 100%;
             margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background-color: #f4f7f5;
+            font-family: var(--font-family-sans);
+            background-color: var(--color-background);
+            color: var(--color-text-main);
         }
         
         .login-container {
@@ -34,208 +37,266 @@
             display: flex;
         }
 
-        /* Left Side (Banner) */
+        /* Left Hero Banner */
         .login-left {
-            flex: 1.1;
+            flex: 1.15;
             background: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            justify-content: space-between;
             color: white;
             padding: 3.5rem;
             position: relative;
+            overflow: hidden;
         }
 
         .login-left::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, rgba(27, 94, 32, 0.94) 0%, rgba(46, 125, 50, 0.90) 100%);
+            background: linear-gradient(145deg, rgba(6, 78, 59, 0.94) 0%, rgba(2, 44, 34, 0.96) 65%, rgba(180, 83, 9, 0.45) 100%);
             z-index: 1;
         }
 
         .login-left-content {
             position: relative;
             z-index: 2;
-            text-align: center;
-            max-width: 480px;
+            max-width: 520px;
         }
 
-        .logo-wrapper {
+        .brand-pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(12px);
+            padding: 7px 18px;
+            border-radius: var(--radius-full);
+            color: #fef3c7;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
             margin-bottom: 2rem;
-        }
-
-        .logo-wrapper img {
-            width: 170px;
-            height: auto;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            background: white;
-            padding: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         }
 
         .login-left h1 {
-            font-size: 2.4rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
+            font-size: 2.85rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.85rem;
         }
 
-        .brand-tagline-badge {
-            display: inline-block;
-            background: rgba(254, 243, 199, 0.2);
-            border: 1px solid rgba(253, 230, 138, 0.4);
-            color: #fef3c7;
-            font-family: 'Playfair Display', Georgia, serif;
+        .brand-tagline-hero {
+            font-family: var(--font-family-serif);
             font-style: italic;
             font-weight: 700;
-            font-size: 1.1rem;
-            padding: 6px 20px;
-            border-radius: 50px;
+            font-size: 1.45rem;
+            color: var(--ka-amber-300);
+            display: block;
             margin-bottom: 1.5rem;
-            letter-spacing: 0.5px;
-            backdrop-filter: blur(5px);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.25);
         }
 
         .login-left p {
-            font-size: 0.95rem;
-            opacity: 0.9;
-            line-height: 1.6;
-            color: #e2ece5;
+            font-size: 1rem;
+            line-height: 1.65;
+            color: rgba(241, 245, 249, 0.9);
+            margin-bottom: 2.5rem;
         }
 
-        /* Right Side (Form) */
+        /* Feature Pills */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-pill {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-pill i {
+            font-size: 1.25rem;
+            color: var(--ka-amber-300);
+        }
+
+        .brand-footer-left {
+            position: relative;
+            z-index: 2;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        /* Right Form Side */
         .login-right {
-            flex: 0.9;
+            flex: 0.85;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             background: #ffffff;
-            padding: 3rem;
+            padding: 3.5rem 3rem;
+            position: relative;
         }
 
         .login-box {
             width: 100%;
-            max-width: 420px;
+            max-width: 430px;
         }
 
         .login-header {
-            margin-bottom: 2rem;
+            margin-bottom: 2.25rem;
+        }
+
+        .login-header .brand-icon-sq {
+            width: 48px;
+            height: 48px;
+            background: var(--ka-emerald-50);
+            color: var(--ka-emerald-700);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid var(--ka-emerald-200);
         }
 
         .login-header h2 {
             font-size: 1.85rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 0.35rem;
-            letter-spacing: -0.5px;
+            font-weight: 800;
+            color: var(--color-text-main);
+            letter-spacing: -0.02em;
+            margin-bottom: 0.4rem;
         }
 
         .login-header p {
-            color: #64748b;
+            color: var(--color-text-secondary);
             font-size: 0.92rem;
             margin: 0;
         }
 
-        /* Neat Form Controls */
+        /* Form Inputs */
         .form-label {
             font-weight: 600;
-            color: #334155;
+            color: var(--ka-slate-700);
             margin-bottom: 0.45rem;
             font-size: 0.88rem;
         }
 
         .custom-input-group {
-            border: 1.5px solid #cbd5e1;
-            border-radius: 12px;
-            background: #f8fafc;
-            transition: all 0.25s ease;
+            border: 1.5px solid var(--ka-slate-200);
+            border-radius: var(--radius-md);
+            background: #ffffff;
+            transition: all var(--transition-fast);
             overflow: hidden;
+            display: flex;
+            align-items: center;
         }
 
         .custom-input-group:focus-within {
-            background: #ffffff;
-            border-color: var(--brand-green-light);
-            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.12);
+            border-color: var(--ka-emerald-600);
+            box-shadow: 0 0 0 4px rgba(4, 120, 87, 0.12);
         }
 
-        .custom-input-group .input-group-text {
-            background: transparent;
-            border: none;
-            color: #64748b;
+        .custom-input-group .input-icon {
             padding-left: 14px;
             padding-right: 10px;
-            font-size: 1.1rem;
+            color: var(--ka-emerald-700);
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
         }
 
         .custom-input-group .form-control {
             border: none;
             background: transparent;
-            padding: 12px 14px 12px 4px;
+            padding: 13px 14px 13px 4px;
             font-size: 0.95rem;
-            color: #1e293b;
+            color: var(--ka-slate-900);
             box-shadow: none !important;
+            font-family: var(--font-family-sans);
         }
 
         .custom-input-group .form-control::placeholder {
-            color: #94a3b8;
+            color: var(--ka-slate-400);
             font-size: 0.9rem;
         }
 
         .btn-toggle-eye {
             background: transparent;
             border: none;
-            color: #64748b;
+            color: var(--ka-slate-400);
             padding-right: 14px;
             cursor: pointer;
             display: flex;
             align-items: center;
+            transition: color var(--transition-fast);
         }
 
         .btn-toggle-eye:hover {
-            color: #1e293b;
+            color: var(--ka-slate-700);
         }
 
-        /* Button Login */
+        /* Submit Button */
         .btn-login {
-            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+            background: linear-gradient(135deg, var(--ka-emerald-700) 0%, var(--ka-emerald-800) 100%);
             border: none;
             color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
+            padding: 13px 24px;
+            border-radius: var(--radius-md);
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             width: 100%;
-            margin-top: 0.5rem;
-            transition: all 0.25s ease;
-            box-shadow: 0 6px 20px rgba(27, 94, 32, 0.25);
+            margin-top: 0.75rem;
+            transition: all var(--transition-normal);
+            box-shadow: 0 4px 14px rgba(4, 120, 87, 0.28);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            cursor: pointer;
         }
 
         .btn-login:hover {
-            background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
+            background: linear-gradient(135deg, var(--ka-emerald-600) 0%, var(--ka-emerald-700) 100%);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(27, 94, 32, 0.35);
+            box-shadow: var(--shadow-emerald-glow);
             color: white;
         }
 
         .btn-login:active {
-            transform: translateY(0);
+            transform: translateY(0) scale(0.98);
         }
 
         .form-check-input:checked {
-            background-color: var(--brand-green);
-            border-color: var(--brand-green);
+            background-color: var(--ka-emerald-700);
+            border-color: var(--ka-emerald-700);
         }
 
         .form-check-input:focus {
-            box-shadow: 0 0 0 0.25rem rgba(46, 125, 50, 0.2);
+            box-shadow: 0 0 0 0.25rem rgba(4, 120, 87, 0.2);
         }
 
         .invalid-feedback {
@@ -243,52 +304,79 @@
             margin-top: 0.4rem;
         }
 
-        /* Mobile Responsive */
+        /* Mobile View */
         @media (max-width: 991px) {
             .login-left {
                 display: none;
             }
             .login-right {
-                background: #f4f7f5;
-                padding: 2rem 1.25rem;
+                background: var(--color-background);
+                padding: 2.5rem 1.5rem;
             }
             .login-box {
-                background: white;
-                padding: 2.25rem 1.75rem;
-                border-radius: 24px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-                border: 1px solid #e2ece5;
+                background: #ffffff;
+                padding: 2.5rem 2rem;
+                border-radius: var(--radius-xl);
+                box-shadow: var(--shadow-lg);
+                border: 1px solid var(--color-border);
             }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <!-- Left Side: Branding/Image -->
+        <!-- Left Side: Brand Narrative & Visual Artistry -->
         <div class="login-left">
             <div class="login-left-content">
-                <div class="logo-wrapper">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="Kulu Asri Logo" onerror="this.style.display='none'">
+                <div class="brand-pill-badge">
+                    <i class="bi bi-fire text-warning"></i>
+                    <span>Cita Rasa Nusantara • Sejak 2012</span>
                 </div>
-                <h1>Rumah Makan Kulu Asri</h1>
-                <div class="brand-tagline-badge">
-                    Kulu Asri - Jagonya Ikan Bakar!
-                </div>
+                
+                <h1>Rumah Makan<br>Kulu Asri</h1>
+                <span class="brand-tagline-hero">"Jagonya Ikan Bakar!"</span>
+                
                 <p>
-                    Sistem Point of Sale (POS) & Self-Order QR Meja terintegrasi untuk pelayanan kasir cepat dan pemesanan mandiri yang nyaman bagi pelanggan.
+                    Platform Point of Sale (POS) dan Pemesanan Mandiri (QR Self-Order) modern terintegrasi, dirancang khusus untuk kecepatan kasir dan kenyamanan tamu kuliner.
                 </p>
+
+                <!-- Feature Highlights -->
+                <div class="feature-grid">
+                    <div class="feature-pill">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        <span>Kasir Cepat & Cetak Struk</span>
+                    </div>
+                    <div class="feature-pill">
+                        <i class="bi bi-qr-code-scan"></i>
+                        <span>Self-Order QR Meja</span>
+                    </div>
+                    <div class="feature-pill">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span>Real-time Sales Analytics</span>
+                    </div>
+                    <div class="feature-pill">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Void Audit & Role Security</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Left Footer Signoff -->
+            <div class="brand-footer-left">
+                <span>&copy; {{ date('Y') }} RM Kulu Asri POS System</span>
+                <span>v2.4 Enterprise Edition</span>
             </div>
         </div>
 
-        <!-- Right Side: Login Form -->
+        <!-- Right Side: Clean Modern Form -->
         <div class="login-right">
             <div class="login-box">
                 <div class="login-header">
-                    <div class="d-lg-none mb-3 text-center">
-                        <img src="{{ asset('images/logo.jpg') }}" alt="Kulu Asri Logo" style="width: 110px; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); padding: 4px; background: white;" onerror="this.style.display='none'">
+                    <div class="brand-icon-sq">
+                        <i class="bi bi-shop"></i>
                     </div>
-                    <h2>Selamat Datang! 👋</h2>
-                    <p>Silakan masuk ke akun POS Kasir / Admin Kulu Asri.</p>
+                    <h2>Selamat Datang</h2>
+                    <p>Masukkan kredensial akun kasir atau administrator Anda.</p>
                 </div>
 
                 <form method="POST" action="{{ route('login') }}">
@@ -297,8 +385,8 @@
                     <!-- Email Input -->
                     <div class="mb-3">
                         <label for="email" class="form-label">Alamat Email</label>
-                        <div class="input-group custom-input-group @error('email') border-danger @enderror">
-                            <span class="input-group-text"><i class="bi bi-envelope text-success"></i></span>
+                        <div class="custom-input-group @error('email') border-danger @enderror">
+                            <span class="input-icon"><i class="bi bi-envelope"></i></span>
                             <input id="email" 
                                    type="email" 
                                    class="form-control @error('email') is-invalid @enderror" 
@@ -320,22 +408,22 @@
                     <!-- Password Input -->
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <label for="password" class="form-label mb-0">Password</label>
+                            <label for="password" class="form-label mb-0">Password Akun</label>
                             @if (Route::has('password.request'))
-                                <a class="text-decoration-none small fw-semibold" href="{{ route('password.request') }}" style="color: var(--brand-green);">
+                                <a class="text-decoration-none small fw-semibold" href="{{ route('password.request') }}" style="color: var(--ka-emerald-700);">
                                     Lupa Password?
                                 </a>
                             @endif
                         </div>
-                        <div class="input-group custom-input-group @error('password') border-danger @enderror">
-                            <span class="input-group-text"><i class="bi bi-shield-lock text-success"></i></span>
+                        <div class="custom-input-group @error('password') border-danger @enderror">
+                            <span class="input-icon"><i class="bi bi-shield-lock"></i></span>
                             <input id="password" 
                                    type="password" 
                                    class="form-control @error('password') is-invalid @enderror" 
                                    name="password" 
                                    required 
                                    autocomplete="current-password" 
-                                   placeholder="Masukkan password akun">
+                                   placeholder="••••••••">
                             <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility()" title="Lihat/Sembunyikan Password">
                                 <i class="bi bi-eye" id="eyeIcon"></i>
                             </button>
@@ -353,28 +441,28 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
                             <label class="form-check-label text-muted small" for="remember">
-                                Ingat sesi saya
+                                Simpan sesi login ini
                             </label>
                         </div>
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn btn-login">
-                        <span>Masuk ke Sistem POS</span>
-                        <i class="bi bi-arrow-right-short fs-5"></i>
+                    <button type="submit" class="btn-login">
+                        <span>Masuk ke Dashboard / POS</span>
+                        <i class="bi bi-arrow-right fs-5"></i>
                     </button>
                 </form>
 
                 <div class="text-center mt-4 pt-3 border-top">
-                    <small style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #1b5e20; font-size: 13px; font-weight: 700;">
-                        Kulu Asri <span style="color: #d97706;">-</span> Jagonya Ikan Bakar!
+                    <small style="font-family: var(--font-family-serif); font-style: italic; color: var(--ka-emerald-800); font-size: 13px; font-weight: 700;">
+                        Kulu Asri <span style="color: var(--ka-amber-600);">—</span> Jagonya Ikan Bakar!
                     </small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS & Toggle Password Script -->
+    <!-- Bootstrap JS & Toggle Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function togglePasswordVisibility() {

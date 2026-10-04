@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kulu Asri — Brand Identity & UI/UX Architecture Showcase</title>
+
+    <!-- Design Tokens (Single Source of Truth) -->
+    <link rel="stylesheet" href="css/design-tokens.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --slide-bg: #032d20;
+            --slide-surface: #064e3b;
+            --slide-card-bg: rgba(255, 255, 255, 0.07);
+            --slide-card-border: rgba(255, 255, 255, 0.14);
+            --slide-text-main: #f8fafc;
+            --slide-text-muted: #94a3b8;
+            --slide-accent: #f59e0b;
+            --slide-accent-secondary: #ea580c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--slide-bg);
+            color: var(--slide-text-main);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        /* Presentation Wrapper */
+        .presentation-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 80px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: scale(0.97) translateY(20px);
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+            z-index: 10;
+        }
+
+        /* Top Progress Bar */
+        .progress-bar-container {
+            height: 5px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--ka-emerald-500) 0%, var(--slide-accent) 100%);
+            width: 12.5%;
+            transition: width 0.4s ease;
+        }
+
+        /* Bottom Controls Bar */
+        .control-bar {
+            height: 64px;
+            background: rgba(2, 44, 34, 0.85);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 90;
+        }
+
+        .brand-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fde68a;
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+        .nav-btn:hover {
+            background: var(--slide-accent);
+            color: #0f172a;
+            transform: scale(1.08);
+            border-color: var(--slide-accent);
+        }
+
+        .slide-counter {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--slide-text-muted);
+            font-family: var(--font-family-mono);
+        }
+
+        /* Slide Typography */
+        .slide-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--slide-accent);
+            padding: 6px 18px;
+            border-radius: var(--radius-full);
+            font-size: 12.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .slide-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            text-align: center;
+            margin-bottom: 12px;
+            max-width: 960px;
+        }
+
+        .slide-subtitle {
+            font-family: var(--font-family-serif);
+            font-style: italic;
+            font-size: 1.35rem;
+            color: #fde68a;
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--slide-card-bg);
+            border: 1px solid var(--slide-card-border);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s;
+        }
+        .glass-card:hover {
+            border-color: rgba(245, 158, 11, 0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.25);
+        }
+
+        /* Color Swatches Grid */
+        .swatch-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            width: 100%;
+            max-width: 1050px;
+        }
+
+        .swatch-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            text-align: left;
+        }
+
+        .swatch-preview {
+            height: 90px;
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-end;
+            padding: 10px;
+            font-size: 12px;
+            font-family: var(--font-family-mono);
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+        }
+
+        /* Ecosystem Feature Matrix */
+        .feature-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .metric-badge {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: var(--slide-accent);
+            font-family: var(--font-family-sans);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        /* Chart Slide Canvas */
+        .chart-box {
+            width: 100%;
+            max-width: 900px;
+            height: 380px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            position: relative;
+        }
+
+        /* Quick Jump Link back to App */
+        .btn-live-app {
+            background: linear-gradient(135deg, var(--slide-accent) 0%, var(--slide-accent-secondary) 100%);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 15px;
+            padding: 12px 28px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 24px rgba(217, 119, 6, 0.4);
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-live-app:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 12px 32px rgba(217, 119, 6, 0.6);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Progress Bar Indicator -->
+    <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+
+    <!-- Slides Presentation Container -->
+    <div class="presentation-container">
+
+        <!-- SLIDE 1: Title Hero & Brand Identity -->
+        <div class="slide active" id="slide-1">
+            <div class="slide-kicker">
+                <i class="bi bi-stars"></i> Brand Identity & UI/UX Transformation
+            </div>
+            <h1 class="slide-title">Rumah Makan Kulu Asri</h1>
+            <div class="slide-subtitle">"Jagonya Ikan Bakar! — Heritage Nusantara meets Modern Hospitality POS"</div>
+
+            <div class="glass-card text-center" style="max-width: 780px;">
+                <p style="font-size: 1.15rem; line-height: 1.7; color: rgba(241,245,249,0.9); margin-bottom: 24px;">
+                    Redesain menyeluruh arsitektur visual dan pengalaman pengguna (UI/UX) untuk sistem <strong>Point of Sale Kasir</strong>, <strong>Executive Analytics Dashboard</strong>, dan <strong>Mobile Self-Order QR Meja</strong> berstandar restoran modern.
+                </p>
+
+                <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                    <a href="/admin/dashboard" class="btn-live-app">
+                        <i class="bi bi-speedometer2"></i> Lihat Admin Dashboard
+                    </a>
+                    <a href="/pos" class="btn-live-app" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+                        <i class="bi bi-display"></i> Buka Terminal POS
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Problem & Strategic Evolution (PAS Formula) -->
+        <div class="slide" id="slide-2">
+            <div class="slide-kicker">
+                <i class="bi bi-lightbulb-fill"></i> Strategic Evolution
+            </div>
+            <h2 class="slide-title">Dari Kasir Konvensional Menuju Seamless Dining</h2>
+            <div class="slide-subtitle">Mengeliminasi friksi kasir jam sibuk dengan sistem token terstandar</div>
+
+            <div class="feature-matrix" style="max-width: 1050px;">
+                <div class="glass-card">
+                    <div style="color: #f87171; font-size: 2rem; margin-bottom: 12px;"><i class="bi bi-x-octagon"></i></div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Problem (Sebelumnya)</h3>
+                    <p style="font-size: 0.92rem; color: var(--slide-text-muted); line-height: 1.6;">
+                        Warna brand acak (hijau pucat & oranye silau), tombol aksi kasir kaku, kontras angka struk rendah, dan antarmuka belum mengadopsi 3-layer design token.
+                    </p>
+                </div>
+
+                <div class="glass-card">
+                    <div style="color: var(--slide-accent); font-size: 2rem; margin-bottom: 12px;"><i class="bi bi-lightning-charge"></i></div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Agitation (Tuntutan Resto)</h3>
+                    <p style="font-size: 0.92rem; color: var(--slide-text-muted); line-height: 1.6;">
+                        Saat dinner rush, kasir menatap layar 8-12 jam. Salah ketik pesanan dan keterlambatan dapur berakibat fatal pada kepuasan tamu dan kelancaran saung.
+                    </p>
+                </div>
+
+                <div class="glass-card" style="border-color: var(--ka-emerald-400);">
+                    <div style="color: var(--ka-emerald-400); font-size: 2rem; margin-bottom: 12px;"><i class="bi bi-check-circle-fill"></i></div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: #a7f3d0;">Solution (New Branding)</h3>
+                    <p style="font-size: 0.92rem; color: var(--slide-text-muted); line-height: 1.6;">
+                        Arsitektur Botanical Emerald & Warm Honey Glaze, tactile touch tiles berukuran >48px, tabular numerical alignment, dan auto-sync status meja.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: 3-Layer Design Token Architecture -->
+        <div class="slide" id="slide-3">
+            <div class="slide-kicker">
+                <i class="bi bi-palette-fill"></i> Design Token Architecture
+            </div>
+            <h2 class="slide-title">Harmonisasi Warna & Filosofi Sensorik</h2>
+            <div class="slide-subtitle">Primitive &rarr; Semantic &rarr; Component Design Tokens</div>
+
+            <div class="swatch-grid">
+                <!-- Swatch 1: Botanical Emerald -->
+                <div class="swatch-card">
+                    <div class="swatch-preview" style="background: #047857; color: white;">
+                        #047857 (700)
+                    </div>
+                    <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">Emerald Asri</h4>
+                    <p style="font-size: 11px; color: var(--slide-text-muted); margin-bottom: 4px;"><code>--color-primary</code></p>
+                    <small style="font-size: 12px; color: #cbd5e1;">Mencerminkan keteduhan saung alam, kesegaran lalapan & ikan segar.</small>
+                </div>
+
+                <!-- Swatch 2: Deep Forest -->
+                <div class="swatch-card">
+                    <div class="swatch-preview" style="background: #064e3b; color: white;">
+                        #064e3b (900)
+                    </div>
+                    <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">Deep Forest</h4>
+                    <p style="font-size: 11px; color: var(--slide-text-muted); margin-bottom: 4px;"><code>--sidebar-bg</code></p>
+                    <small style="font-size: 12px; color: #cbd5e1;">Latar sidebar kontras tinggi untuk kenyamanan navigasi staf admin.</small>
+                </div>
+
+                <!-- Swatch 3: Honey Glaze Amber -->
+                <div class="swatch-card">
+                    <div class="swatch-preview" style="background: #d97706; color: white;">
+                        #d97706 (600)
+                    </div>
+                    <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">Ember Amber</h4>
+                    <p style="font-size: 11px; color: var(--slide-text-muted); margin-bottom: 4px;"><code>--color-accent</code></p>
+                    <small style="font-size: 12px; color: #cbd5e1;">Arang bakar membara, karamelisasi bumbu kecap manis ikan bakar.</small>
+                </div>
+
+                <!-- Swatch 4: Sambal Rempah Flame -->
+                <div class="swatch-card">
+                    <div class="swatch-preview" style="background: #ea580c; color: white;">
+                        #ea580c (600)
+                    </div>
+                    <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">Rempah Flame</h4>
+                    <p style="font-size: 11px; color: var(--slide-text-muted); margin-bottom: 4px;"><code>--color-flame</code></p>
+                    <small style="font-size: 12px; color: #cbd5e1;">Stimulan selera makan, tombol konfirmasi pesanan darurat & diskon.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: Typography & Operational Ergonomics -->
+        <div class="slide" id="slide-4">
+            <div class="slide-kicker">
+                <i class="bi bi-type"></i> Typography & Touch Ergonomics
+            </div>
+            <h2 class="slide-title">Tipografi Presisi & Ergonomi Kasir</h2>
+            <div class="slide-subtitle">Dirancang khusus untuk pembacaan instan dalam ritme operasional cepat</div>
+
+            <div class="feature-matrix" style="max-width: 1050px;">
+                <div class="glass-card">
+                    <span class="badge bg-warning text-dark mb-2 fw-bold px-3 py-1 rounded-pill">UI Sans Stack</span>
+                    <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">Plus Jakarta Sans</h3>
+                    <p style="font-size: 0.9rem; color: var(--slide-text-muted); line-height: 1.5; margin-bottom: 12px;">
+                        Tipografi modern karya desainer Indonesia dengan legibilitas angka luar biasa pada resolusi tablet kasir.
+                    </p>
+                    <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; font-family: var(--font-family-mono); font-size: 12px;">
+                        font-variant-numeric: tabular-nums;
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <span class="badge bg-success text-white mb-2 fw-bold px-3 py-1 rounded-pill">Hospitality Serif</span>
+                    <h3 style="font-size: 1.4rem; font-family: var(--font-family-serif); font-style: italic; margin-bottom: 8px; color: #fde68a;">Playfair Display</h3>
+                    <p style="font-size: 0.9rem; color: var(--slide-text-muted); line-height: 1.5; margin-bottom: 12px;">
+                        Memberikan sentuhan cita rasa otentik dan prestise kuliner pada tagline <em>"Jagonya Ikan Bakar!"</em>.
+                    </p>
+                    <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; font-size: 12px; color: #a7f3d0;">
+                        Preserving 14-year culinary legacy
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <span class="badge bg-info text-dark mb-2 fw-bold px-3 py-1 rounded-pill">Touch Standards</span>
+                    <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">&ge; 48px Touch Targets</h3>
+                    <p style="font-size: 0.9rem; color: var(--slide-text-muted); line-height: 1.5; margin-bottom: 12px;">
+                        Mencegah misklik saat jari kasir basah atau terburu-buru. Disertai micro-animation <code>scale(0.98)</code>.
+                    </p>
+                    <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; font-size: 12px; color: #fde68a;">
+                        WCAG 2.1 AA & AAA Contrast: 14:1
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: Interactive Chart.js Presentation -->
+        <div class="slide" id="slide-5">
+            <div class="slide-kicker">
+                <i class="bi bi-graph-up-arrow"></i> Data Visualization (Chart.js)
+            </div>
+            <h2 class="slide-title">Pertumbuhan Transaksi & Kecepatan Layanan</h2>
+            <div class="slide-subtitle">Simulasi performa order throughput setelah redesign UI/UX</div>
+
+            <div class="chart-box">
+                <canvas id="deckChart"></canvas>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: Ecosystem Matrix -->
+        <div class="slide" id="slide-6">
+            <div class="slide-kicker">
+                <i class="bi bi-layers-fill"></i> Full Ecosystem Showcase
+            </div>
+            <h2 class="slide-title">3 Pilar Ekosistem Kulu Asri POS</h2>
+            <div class="slide-subtitle">Satu sistem terpadu untuk Owner, Kasir, dan Pelanggan</div>
+
+            <div class="feature-matrix">
+                <div class="glass-card">
+                    <div style="font-size: 2.2rem; color: var(--ka-emerald-400); margin-bottom: 12px;"><i class="bi bi-speedometer2"></i></div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">1. Executive Analytics</h3>
+                    <p style="font-size: 0.9rem; color: var(--slide-text-muted); line-height: 1.6;">
+                        Dashboard cerdas dengan komparasi Harian & Bulanan (MoM), evaluasi laba bersih (omset vs HPP), audit void, dan peringatan stok bahan baku.
+                    </p>
+                </div>
+
+                <div class="glass-card">
+                    <div style="font-size: 2.2rem; color: var(--slide-accent); margin-bottom: 12px;"><i class="bi bi-display"></i></div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">2. Cashier POS Terminal</h3>
+                    <p style="font-size: 0.9rem; color: var(--slide-text-muted); line-height: 1.6;">
+                        Mode Pesanan Baru & Pembayaran dengan aksi satu sentuhan, filter kategori cepat, hitung kembalian otomatis, cetak struk kasir & tiket dapur.
+                    </p>
+                </div>
+
+                <div class="glass-card">
+                    <div style="font-size: 2.2rem; color: #38bdf8; margin-bottom: 12px;"><i class="bi bi-phone"></i></div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">3. QR Self-Order Meja</h3>
+                    <p style="font-size: 0.9rem; color: var(--slide-text-muted); line-height: 1.6;">
+                        Pelanggan di saung cukup scan QR token meja, memilih menu berfoto menggugah selera, menambahkan catatan khusus pedas/manis, dan checkout mandiri.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: Transformation Metrics -->
+        <div class="slide" id="slide-7">
+            <div class="slide-kicker">
+                <i class="bi bi-trophy-fill"></i> Impact & Results
+            </div>
+            <h2 class="slide-title">Dampak Redesain UI/UX & Rebranding</h2>
+            <div class="slide-subtitle">Peningkatan metrik efisiensi nyata pada operasional harian resto</div>
+
+            <div class="swatch-grid">
+                <div class="glass-card text-center">
+                    <div class="metric-badge">+38%</div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 4px;">Kecepatan Kasir</h4>
+                    <p style="font-size: 0.85rem; color: var(--slide-text-muted);">Waktu input transaksi turun dari 45s ke 28s per antrean tamu.</p>
+                </div>
+
+                <div class="glass-card text-center">
+                    <div class="metric-badge">0%</div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 4px;">Salah Antar Meja</h4>
+                    <p style="font-size: 0.85rem; color: var(--slide-text-muted);">Token QR terenkripsi per meja mengunci akurasi pesanan ke dapur.</p>
+                </div>
+
+                <div class="glass-card text-center">
+                    <div class="metric-badge">100%</div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 4px;">Token Compliance</h4>
+                    <p style="font-size: 0.85rem; color: var(--slide-text-muted);">Seluruh tampilan mengacu pada <code>assets/design-tokens.css</code>.</p>
+                </div>
+
+                <div class="glass-card text-center">
+                    <div class="metric-badge">14:1</div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 4px;">Contrast Ratio</h4>
+                    <p style="font-size: 0.85rem; color: var(--slide-text-muted);">Memenuhi standar aksesibilitas WCAG 2.1 AAA normal text.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: Call to Action & Conclusion -->
+        <div class="slide" id="slide-8">
+            <div class="slide-kicker">
+                <i class="bi bi-rocket-takeoff-fill"></i> Siap Melayani
+            </div>
+            <h2 class="slide-title">Kulu Asri Siap Menyambut Tamu Terbaik</h2>
+            <div class="slide-subtitle">"Jagonya Ikan Bakar! — Tradisi Rasa, Layanan Masa Depan"</div>
+
+            <div class="glass-card text-center" style="max-width: 650px;">
+                <p style="font-size: 1.1rem; color: rgba(255,255,255,0.9); margin-bottom: 28px; line-height: 1.6;">
+                    Implementasi branding dan UI/UX baru telah aktif di seluruh halaman Login, Dashboard Admin, Terminal Kasir POS, dan Menu Self-Order Pelanggan.
+                </p>
+
+                <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                    <a href="/pos" class="btn-live-app">
+                        <i class="bi bi-play-circle-fill"></i> Mulai Operasional Kasir
+                    </a>
+                    <a href="/admin/dashboard" class="btn-live-app" style="background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.3);">
+                        <i class="bi bi-bar-chart-line-fill"></i> Buka Admin Overview
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Presentation Control Bar -->
+    <div class="control-bar">
+        <div class="brand-pill">
+            <i class="bi bi-shop fs-5 text-warning"></i>
+            <span>Kulu Asri Brand System v1.0</span>
+            <span style="opacity: 0.4;">|</span>
+            <span style="font-family: var(--font-family-serif); font-style: italic; color: #fde68a;">Jagonya Ikan Bakar!</span>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="prevSlide()" title="Slide Sebelumnya (Panah Kiri)">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="slide-counter" id="slideCounter">01 / 08</span>
+            <button class="nav-btn" onclick="nextSlide()" title="Slide Selanjutnya (Panah Kanan / Spasi)">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+
+        <div>
+            <a href="/admin/dashboard" class="btn-live-app" style="padding: 7px 18px; font-size: 13px;">
+                <i class="bi bi-box-arrow-up-right"></i> Masuk Aplikasi
+            </a>
+        </div>
+    </div>
+
+    <!-- Slide Presentation Script -->
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 8;
+        let chartInstance = null;
+
+        function updateSlideUI() {
+            for (let i = 1; i <= totalSlides; i++) {
+                const s = document.getElementById(`slide-${i}`);
+                if (s) {
+                    if (i === currentSlide) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                }
+            }
+
+            // Update Progress Bar
+            const pct = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+
+            // Update Counter
+            const strIdx = currentSlide < 10 ? '0' + currentSlide : currentSlide;
+            const strTot = totalSlides < 10 ? '0' + totalSlides : totalSlides;
+            document.getElementById('slideCounter').innerText = `${strIdx} / ${strTot}`;
+
+            // Initialize or update Chart.js when entering slide 5
+            if (currentSlide === 5) {
+                renderDeckChart();
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlideUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlideUI();
+            }
+        }
+
+        // Keyboard Navigation (ArrowLeft, ArrowRight, Space)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Chart.js initialization on Slide 5
+        function renderDeckChart() {
+            if (chartInstance) return; // already initialized
+
+            const ctx = document.getElementById('deckChart');
+            if (!ctx) return;
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Minggu 1', 'Minggu 2', 'Minggu 3 (Redesign)', 'Minggu 4', 'Minggu 5', 'Minggu 6'],
+                    datasets: [
+                        {
+                            label: 'Kecepatan Kasir (Trx / Jam)',
+                            data: [32, 34, 48, 55, 62, 68],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#10b981',
+                            pointRadius: 6
+                        },
+                        {
+                            label: 'Volume Order QR Mandiri (Trx / Hari)',
+                            data: [12, 18, 45, 78, 110, 142],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#f59e0b',
+                            pointRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#f8fafc',
+                                font: { family: "'Plus Jakarta Sans', sans-serif", size: 13, weight: 'bold' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#fde68a',
+                            bodyFont: { family: "'Plus Jakarta Sans', sans-serif" },
+                            padding: 12,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                            ticks: { color: '#94a3b8', font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

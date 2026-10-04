@@ -6,35 +6,38 @@
     <title>Menu Meja {{ $table->name }} - Rumah Makan Kulu Asri</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Google Fonts & Bootstrap 5 & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@0,700;1,700;1,800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Design Tokens & Google Fonts -->
+    <link rel="stylesheet" href="{{ asset('css/design-tokens.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
         :root {
-            --primary: #1b5e20;
-            --primary-light: #2e7d32;
-            --primary-soft: #e8f5e9;
-            --accent: #d97706;
-            --accent-soft: #fef3c7;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --bg-page: #f8faf9;
-            --card-border: #e2ece5;
+            --primary: var(--ka-emerald-700);
+            --primary-light: var(--ka-emerald-600);
+            --primary-soft: var(--ka-emerald-50);
+            --accent: var(--ka-amber-600);
+            --accent-soft: var(--ka-amber-50);
+            --text-main: var(--ka-slate-900);
+            --text-muted: var(--ka-slate-500);
+            --bg-page: var(--color-background);
+            --card-border: var(--color-border);
         }
 
         * { -webkit-tap-highlight-color: transparent; }
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: var(--font-family-sans);
             background-color: var(--bg-page);
             color: var(--text-main);
-            padding-bottom: 120px; /* Space for floating cart */
+            padding-bottom: 120px;
             overflow-x: hidden;
         }
 
         .brand-tagline-stylish {
-            font-family: 'Playfair Display', Georgia, serif;
+            font-family: var(--font-family-serif);
             font-style: italic;
             font-weight: 700;
             letter-spacing: 0.3px;

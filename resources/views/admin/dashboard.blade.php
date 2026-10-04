@@ -3,74 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Kulu Asri</title>
-    <!-- Bootstrap CSS -->
+    <title>Admin Dashboard — Rumah Makan Kulu Asri</title>
+
+    <!-- Design Tokens & Google Fonts -->
+    <link rel="stylesheet" href="{{ asset('css/design-tokens.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS & Icons CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #f4f7f6; }
-        
-        .sidebar { 
-            min-height: 100vh; 
-            background: linear-gradient(180deg, #1b5e20 0%, #2e7d32 100%); 
-            color: white; 
-            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+        body { 
+            font-family: var(--font-family-sans); 
+            background: var(--color-background);
+            color: var(--color-text-main);
+            overflow-x: hidden;
         }
-        .sidebar-brand {
-            padding: 25px 20px;
-            font-size: 1.5rem;
+
+        .main-content { 
+            padding: 36px 42px; 
+            background: var(--color-background); 
+            min-height: 100vh;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Top Header Styling */
+        .dashboard-header-title {
+            font-size: 1.75rem;
             font-weight: 800;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
+            letter-spacing: -0.025em;
+            color: var(--ka-slate-900);
+            margin-bottom: 4px;
         }
-        .sidebar a { 
-            color: rgba(255,255,255,0.7); text-decoration: none; padding: 12px 25px; 
-            display: block; font-weight: 500; transition: 0.3s; 
-            border-left: 4px solid transparent;
+
+        .dashboard-header-subtitle {
+            color: var(--ka-slate-500);
+            font-size: 0.92rem;
+            margin: 0;
         }
-        .sidebar a:hover, .sidebar a.active { 
-            background: rgba(255,255,255,0.1); color: white; 
-            border-left: 4px solid #f57c00;
+
+        /* Modern Filter Bar */
+        .filter-select {
+            background-color: #ffffff;
+            border: 1.5px solid var(--ka-slate-200);
+            color: var(--ka-emerald-800);
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            box-shadow: var(--shadow-xs);
+            transition: all var(--transition-fast);
         }
-        
-        .main-content { padding: 40px; background: #f4f7f6; }
-        
+        .filter-select:focus {
+            border-color: var(--ka-emerald-600);
+            box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
+        }
+
+        .date-badge {
+            background: #ffffff;
+            border: 1px solid var(--ka-slate-200);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--ka-slate-700);
+            box-shadow: var(--shadow-xs);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Stat Cards */
         .card-stat { 
-            border: none; border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03); 
-            transition: 0.3s; background: white;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg); 
+            box-shadow: var(--shadow-sm); 
+            transition: all var(--transition-normal); 
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
         }
-        .card-stat:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
-        
+        .card-stat:hover { 
+            transform: translateY(-3px); 
+            box-shadow: var(--shadow-md); 
+            border-color: rgba(4, 120, 87, 0.25);
+        }
+
         .stat-icon {
-            width: 50px; height: 50px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem;
+            width: 44px; 
+            height: 44px; 
+            border-radius: var(--radius-md);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
         }
-        
+
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--ka-slate-500);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--ka-slate-900);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-unit {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ka-slate-500);
+        }
+
+        /* Channel Performance Cards */
+        .card-channel {
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            background: #ffffff;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+        .card-channel::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+        .card-channel.channel-pos::before { background: var(--ka-emerald-600); }
+        .card-channel.channel-qr::before { background: var(--ka-amber-500); }
+        .card-channel.channel-pending::before { background: #f59e0b; }
+        .card-channel.channel-void::before { background: var(--ka-slate-400); }
+
+        .card-channel:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Comparison Widget Cards */
+        .card-comparison {
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            background: #ffffff;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        /* Section Cards */
         .top-menu-card {
-            border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg); 
+            box-shadow: var(--shadow-sm);
+            background: #ffffff;
+        }
+
+        .chart-toggle-scroll-wrap {
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 2px;
+        }
+        .chart-toggle-scroll-wrap::-webkit-scrollbar {
+            display: none;
+        }
+        .chart-toggle-pills {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .chart-toggle-btn {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            transition: all var(--transition-fast);
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .chart-toggle-btn.active {
+            background: var(--ka-emerald-700);
+            color: white;
+            box-shadow: 0 2px 8px rgba(4, 120, 87, 0.3);
+        }
+        .chart-toggle-btn:not(.active) {
+            background: transparent;
+            color: var(--ka-slate-600);
+        }
+        .chart-toggle-btn:not(.active):hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--ka-slate-900);
+        }
+
+        .chart-canvas-container {
+            position: relative;
+            height: 320px;
+        }
+
+        .rank-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 991.98px) {
+            .main-content {
+                padding: 22px 18px !important;
+                min-height: calc(100vh - 60px);
+                width: 100% !important;
+                max-width: 100vw !important;
+            }
+            .dashboard-header-title {
+                font-size: 1.45rem;
+            }
+            .dashboard-header-subtitle {
+                font-size: 0.85rem;
+            }
+            .chart-canvas-container {
+                height: 270px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .main-content {
+                padding: 14px 12px !important;
+            }
+            .dashboard-header-title {
+                font-size: 1.3rem;
+            }
+            .dashboard-header-subtitle {
+                font-size: 0.8rem;
+            }
+            .stat-icon {
+                width: 34px;
+                height: 34px;
+                font-size: 1rem;
+            }
+            .stat-label {
+                font-size: 0.68rem;
+                margin-bottom: 2px;
+                letter-spacing: 0.2px;
+            }
+            .stat-value {
+                font-size: 1.15rem;
+            }
+            .stat-unit {
+                font-size: 11px;
+            }
+            .filter-select {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            .chart-toggle-btn {
+                padding: 5px 11px;
+                font-size: 0.74rem;
+            }
+            .chart-canvas-container {
+                height: 220px;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="d-flex">
-    <!-- Sidebar -->
+    <!-- Sidebar Component -->
     @include('admin.sidebar')
 
-    <!-- Main Content -->
+    <!-- Main Content Canvas -->
     <div class="flex-grow-1 main-content">
-        <div class="d-flex justify-content-between align-items-center mb-5">
+        <!-- Top App Bar & Filters -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
             <div>
-                <h2 class="fw-bold text-dark mb-0">Dashboard Overview</h2>
-                <p class="text-muted">Selamat datang, {{ auth()->user()->name }}!</p>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill" style="font-size: 11px; font-weight: 700;">
+                        <i class="bi bi-circle-fill" style="font-size: 7px;"></i> POS Enterprise Live
+                    </span>
+                </div>
+                <h1 class="dashboard-header-title">Ringkasan Operasional & Penjualan</h1>
+                <p class="dashboard-header-subtitle">Selamat datang kembali, <strong>{{ auth()->user()->name }}</strong>! Berikut performa restoran Kulu Asri hari ini.</p>
             </div>
-            <div class="d-flex align-items-center gap-3">
-                <form action="{{ route('admin.dashboard') }}" method="GET" class="d-flex align-items-center" id="filterForm">
-                    <input type="date" name="custom_date" id="customDateInput" class="form-control rounded-pill border-success text-success fw-bold shadow-sm me-2 {{ ($filter ?? 'daily') == 'custom_date' ? '' : 'd-none' }}" value="{{ $customDate ?? \Carbon\Carbon::now()->toDateString() }}" onchange="document.getElementById('filterForm').submit()" style="max-width: 150px;">
-                    <select name="filter" id="filterSelect" class="form-select rounded-pill border-success text-success fw-bold shadow-sm" onchange="toggleDateInput()" style="cursor: pointer; width: 160px;">
+
+            <!-- Date & Period Filter Form -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <form action="{{ route('admin.dashboard') }}" method="GET" class="d-flex align-items-center gap-2" id="filterForm">
+                    <input type="date" name="custom_date" id="customDateInput" class="form-control form-control-sm rounded-pill border-success text-success fw-bold shadow-sm {{ ($filter ?? 'daily') == 'custom_date' ? '' : 'd-none' }}" value="{{ $customDate ?? \Carbon\Carbon::now()->toDateString() }}" onchange="document.getElementById('filterForm').submit()" style="max-width: 140px; font-size: 12px;">
+                    
+                    <select name="filter" id="filterSelect" class="form-select filter-select" onchange="toggleDateInput()">
                         <option value="daily" {{ ($filter ?? 'daily') == 'daily' ? 'selected' : '' }}>Hari Ini</option>
                         <option value="weekly" {{ ($filter ?? 'daily') == 'weekly' ? 'selected' : '' }}>Minggu Ini</option>
                         <option value="monthly" {{ ($filter ?? 'daily') == 'monthly' ? 'selected' : '' }}>Bulan Ini</option>
@@ -78,76 +321,87 @@
                         <option value="custom_date" {{ ($filter ?? 'daily') == 'custom_date' ? 'selected' : '' }}>Tanggal Spesifik</option>
                     </select>
                 </form>
-                <div class="bg-white px-4 py-2 rounded-pill shadow-sm fw-bold text-success d-none d-md-block">
-                    <i class="bi bi-calendar3 me-2"></i> {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
+
+                <div class="date-badge d-none d-lg-inline-flex">
+                    <i class="bi bi-calendar-event text-success"></i>
+                    <span>{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</span>
                 </div>
             </div>
         </div>
 
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
+        @php
+            $filterText = [
+                'daily' => 'Hari Ini',
+                'weekly' => 'Minggu Ini',
+                'monthly' => 'Bulan Ini',
+                'yearly' => 'Tahun Ini',
+                'custom_date' => 'Tgl ' . ($customDate ?? \Carbon\Carbon::now()->toDateString())
+            ][$filter ?? 'daily'];
+        @endphp
+
+        <!-- Key Financial Metrics (Row 1: 2x2 Grid on Mobile, 4-col on Desktop) -->
+        <div class="row g-2 g-md-3 mb-3 mb-md-4">
+            <!-- Penjualan -->
+            <div class="col-6 col-lg-3">
                 <a href="{{ route('admin.reports', ['filter' => $filter, 'custom_date' => $customDate]) }}" class="text-decoration-none">
-                    <div class="card card-stat p-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                @php
-                                    $filterText = [
-                                        'daily' => 'Hari Ini',
-                                        'weekly' => 'Minggu Ini',
-                                        'monthly' => 'Bulan Ini',
-                                        'yearly' => 'Tahun Ini',
-                                        'custom_date' => 'Tgl ' . ($customDate ?? \Carbon\Carbon::now()->toDateString())
-                                    ][$filter ?? 'daily'];
-                                @endphp
-                                <div class="text-muted small fw-bold text-uppercase mb-2">Penjualan {{ $filterText }}</div>
-                                <h3 class="mb-0 fw-bold text-dark">Rp {{ number_format($totalSales, 0, ',', '.') }}</h3>
+                    <div class="card card-stat p-3 p-md-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-1">
+                            <div class="overflow-hidden">
+                                <div class="stat-label text-truncate">Omset {{ $filterText }}</div>
+                                <div class="stat-value text-success text-truncate">Rp {{ number_format($totalSales, 0, ',', '.') }}</div>
                             </div>
-                            <div class="stat-icon bg-success bg-opacity-10 text-success">
-                                <i class="bi bi-cash-stack"></i>
+                            <div class="stat-icon" style="background: var(--ka-emerald-50); color: var(--ka-emerald-700); border: 1px solid var(--ka-emerald-200);">
+                                <i class="bi bi-wallet2"></i>
                             </div>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-3">
+
+            <!-- Total Transaksi -->
+            <div class="col-6 col-lg-3">
                 <a href="{{ route('admin.reports', ['filter' => $filter, 'custom_date' => $customDate]) }}" class="text-decoration-none">
-                    <div class="card card-stat p-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <div class="text-muted small fw-bold text-uppercase mb-2">Total Transaksi</div>
-                                <h3 class="mb-0 fw-bold text-dark">{{ $totalTransactions }}</h3>
+                    <div class="card card-stat p-3 p-md-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-1">
+                            <div class="overflow-hidden">
+                                <div class="stat-label text-truncate">Total Transaksi</div>
+                                <div class="stat-value text-truncate">{{ $totalTransactions }} <span class="stat-unit">Struk</span></div>
                             </div>
-                            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
-                                <i class="bi bi-receipt"></i>
+                            <div class="stat-icon" style="background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd;">
+                                <i class="bi bi-receipt-cutoff"></i>
                             </div>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-3">
+
+            <!-- Total Void -->
+            <div class="col-6 col-lg-3">
                 <a href="{{ route('admin.voids', ['filter' => $filter, 'custom_date' => $customDate]) }}" class="text-decoration-none">
-                    <div class="card card-stat p-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <div class="text-muted small fw-bold text-uppercase mb-2">Total Void</div>
-                                <h3 class="mb-0 fw-bold text-dark">{{ $totalVoid }}</h3>
+                    <div class="card card-stat p-3 p-md-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-1">
+                            <div class="overflow-hidden">
+                                <div class="stat-label text-truncate">Audit Void</div>
+                                <div class="stat-value text-danger text-truncate">{{ $totalVoid }} <span class="stat-unit">Item</span></div>
                             </div>
-                            <div class="stat-icon bg-danger bg-opacity-10 text-danger">
-                                <i class="bi bi-x-octagon"></i>
+                            <div class="stat-icon" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
+                                <i class="bi bi-shield-x"></i>
                             </div>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-3">
+
+            <!-- Stok Menipis -->
+            <div class="col-6 col-lg-3">
                 <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#lowStockModal">
-                    <div class="card card-stat p-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <div class="text-muted small fw-bold text-uppercase mb-2">Stok Menipis</div>
-                                <h3 class="mb-0 fw-bold text-dark">{{ $lowStock->count() }} Item</h3>
+                    <div class="card card-stat p-3 p-md-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-1">
+                            <div class="overflow-hidden">
+                                <div class="stat-label text-truncate">Peringatan Stok</div>
+                                <div class="stat-value text-warning text-truncate">{{ $lowStock->count() }} <span class="stat-unit">Menu</span></div>
                             </div>
-                            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                            <div class="stat-icon" style="background: var(--ka-amber-50); color: var(--ka-amber-700); border: 1px solid var(--ka-amber-200);">
                                 <i class="bi bi-exclamation-triangle"></i>
                             </div>
                         </div>
@@ -156,63 +410,78 @@
             </div>
         </div>
 
-        <!-- Channel Performance Stats Row (Satu POS, Dua Channel Order) -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
+        <!-- Channel Performance Stats Row (2x2 Grid on Mobile, 4-col on Desktop) -->
+        <div class="row g-2 g-md-3 mb-3 mb-md-4">
+            <div class="col-6 col-lg-3">
                 <a href="{{ route('admin.reports', ['source' => 'pos', 'filter' => $filter, 'custom_date' => $customDate]) }}" class="text-decoration-none">
-                    <div class="card card-stat p-4 border-start border-primary border-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <div class="text-muted small fw-bold text-uppercase mb-1"><i class="bi bi-shop me-1"></i> Order POS Kasir</div>
-                                <h4 class="mb-0 fw-bold text-dark">{{ $posTrxCount }} Trx</h4>
-                                <small class="text-primary fw-bold">Rp {{ number_format($posRevenue, 0, ',', '.') }}</small>
+                    <div class="card card-channel channel-pos p-3 p-md-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-1">
+                            <div class="overflow-hidden">
+                                <div class="stat-label text-truncate d-flex align-items-center gap-1">
+                                    <i class="bi bi-display"></i> Kasir POS
+                                </div>
+                                <div class="stat-value text-dark text-truncate">{{ $posTrxCount }} <span class="stat-unit">Trx</span></div>
+                                <div class="fw-bold text-truncate" style="color: var(--ka-emerald-700); font-size: 13px;">
+                                    Rp {{ number_format($posRevenue, 0, ',', '.') }}
+                                </div>
                             </div>
-                            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
-                                <i class="bi bi-person-badge"></i>
+                            <div class="stat-icon d-none d-sm-flex" style="background: var(--ka-emerald-50); color: var(--ka-emerald-700);">
+                                <i class="bi bi-person-workspace"></i>
                             </div>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-3">
+
+            <div class="col-6 col-lg-3">
                 <a href="{{ route('admin.reports', ['source' => 'qr', 'filter' => $filter, 'custom_date' => $customDate]) }}" class="text-decoration-none">
-                    <div class="card card-stat p-4 border-start border-success border-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <div class="text-muted small fw-bold text-uppercase mb-1"><i class="bi bi-qr-code me-1"></i> Order QR Meja</div>
-                                <h4 class="mb-0 fw-bold text-dark">{{ $qrTrxCount }} Trx</h4>
-                                <small class="text-success fw-bold">Rp {{ number_format($qrRevenue, 0, ',', '.') }}</small>
+                    <div class="card card-channel channel-qr p-3 p-md-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-1">
+                            <div class="overflow-hidden">
+                                <div class="stat-label text-truncate d-flex align-items-center gap-1">
+                                    <i class="bi bi-qr-code-scan"></i> QR Meja
+                                </div>
+                                <div class="stat-value text-dark text-truncate">{{ $qrTrxCount }} <span class="stat-unit">Trx</span></div>
+                                <div class="fw-bold text-truncate" style="color: var(--ka-amber-600); font-size: 13px;">
+                                    Rp {{ number_format($qrRevenue, 0, ',', '.') }}
+                                </div>
                             </div>
-                            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                            <div class="stat-icon d-none d-sm-flex" style="background: var(--ka-amber-50); color: var(--ka-amber-600);">
                                 <i class="bi bi-phone"></i>
                             </div>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-3">
-                <div class="card card-stat p-4 border-start border-warning border-4">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="text-muted small fw-bold text-uppercase mb-1"><i class="bi bi-hourglass-split me-1"></i> Pembayaran Pending</div>
-                            <h4 class="mb-0 fw-bold text-dark">{{ $totalPending }} Trx</h4>
-                            <small class="text-warning fw-bold">Menunggu Payment</small>
+
+            <div class="col-6 col-lg-3">
+                <div class="card card-channel channel-pending p-3 p-md-4 h-100">
+                    <div class="d-flex justify-content-between align-items-start gap-1">
+                        <div class="overflow-hidden">
+                            <div class="stat-label text-truncate d-flex align-items-center gap-1">
+                                <i class="bi bi-hourglass-split"></i> Pending
+                            </div>
+                            <div class="stat-value text-dark text-truncate">{{ $totalPending }} <span class="stat-unit">Trx</span></div>
+                            <small class="text-warning fw-semibold text-truncate d-block" style="font-size: 12px;">Menunggu Bayar</small>
                         </div>
-                        <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <div class="stat-icon d-none d-sm-flex" style="background: #fffbeb; color: #d97706;">
                             <i class="bi bi-clock-history"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card card-stat p-4 border-start border-secondary border-4">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="text-muted small fw-bold text-uppercase mb-1"><i class="bi bi-x-circle me-1"></i> Pembayaran Batal/Expired</div>
-                            <h4 class="mb-0 fw-bold text-dark">{{ $totalFailed }} Trx</h4>
-                            <small class="text-muted">Tidak Terproses</small>
+
+            <div class="col-6 col-lg-3">
+                <div class="card card-channel channel-void p-3 p-md-4 h-100">
+                    <div class="d-flex justify-content-between align-items-start gap-1">
+                        <div class="overflow-hidden">
+                            <div class="stat-label text-truncate d-flex align-items-center gap-1">
+                                <i class="bi bi-x-circle"></i> Batal/Void
+                            </div>
+                            <div class="stat-value text-dark text-truncate">{{ $totalFailed }} <span class="stat-unit">Trx</span></div>
+                            <small class="text-muted text-truncate d-block" style="font-size: 12px;">Tidak Terproses</small>
                         </div>
-                        <div class="stat-icon bg-secondary bg-opacity-10 text-secondary">
+                        <div class="stat-icon d-none d-sm-flex" style="background: var(--ka-slate-100); color: var(--ka-slate-500);">
                             <i class="bi bi-slash-circle"></i>
                         </div>
                     </div>
@@ -220,29 +489,31 @@
             </div>
         </div>
 
-        <!-- Comparison Stats Row -->
-        <div class="row g-4 mb-5">
-            <!-- Today vs Yesterday -->
-            <div class="col-md-6">
-                <div class="card card-stat p-4" style="border-left: 5px solid #2e7d32 !important;">
+        <!-- Period Comparison Cards (Row 3) -->
+        <div class="row g-2 g-md-3 mb-3 mb-md-4">
+            <!-- Daily Comparison -->
+            <div class="col-12 col-lg-6">
+                <div class="card-comparison p-3 p-md-4" style="border-top: 3px solid var(--ka-emerald-600);">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="text-muted small fw-bold text-uppercase"><i class="bi bi-clock-history me-1"></i> Perbandingan Harian</div>
-                        <span id="dailyGrowthBadge" class="badge {{ $todayVsYesterdayDiff >= 0 ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2 shadow-sm">
+                        <div class="fw-bold text-dark d-flex align-items-center gap-2" style="font-size: 0.95rem;">
+                            <i class="bi bi-calendar2-day text-success"></i> Perbandingan Harian
+                        </div>
+                        <span id="dailyGrowthBadge" class="badge {{ $todayVsYesterdayDiff >= 0 ? 'bg-success' : 'bg-danger' }} rounded-pill px-2.5 py-1 fw-bold shadow-sm" style="font-size: 11px;">
                             <i id="dailyGrowthIcon" class="bi {{ $todayVsYesterdayDiff >= 0 ? 'bi-graph-up-arrow' : 'bi-graph-down-arrow' }} me-1"></i>
                             <span id="dailyGrowthPercent">{{ $todayVsYesterdayDiff >= 0 ? '+' : '' }}{{ $todayVsYesterdayPercent }}%</span>
                         </span>
                     </div>
-                    <div class="row align-items-center">
+                    <div class="row g-2 align-items-center">
                         <div class="col-6 border-end">
-                            <small id="dailyPrimaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Hari Ini</small>
-                            <h4 id="dailyPrimaryTotal" class="fw-bold text-dark mb-0">Rp {{ number_format($todayTotal, 0, ',', '.') }}</h4>
+                            <small id="dailyPrimaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.72rem;">Hari Ini</small>
+                            <h4 id="dailyPrimaryTotal" class="fw-bold text-dark mb-0 tabular-nums fs-5 fs-md-4">Rp {{ number_format($todayTotal, 0, ',', '.') }}</h4>
                         </div>
-                        <div class="col-6">
-                            <small id="dailySecondaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Kemarin</small>
-                            <h5 id="dailySecondaryTotal" class="fw-semibold text-secondary mb-0">Rp {{ number_format($yesterdayTotal, 0, ',', '.') }}</h5>
+                        <div class="col-6 ps-3">
+                            <small id="dailySecondaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.72rem;">Kemarin</small>
+                            <h5 id="dailySecondaryTotal" class="fw-semibold text-secondary mb-0 tabular-nums fs-6 fs-md-5">Rp {{ number_format($yesterdayTotal, 0, ',', '.') }}</h5>
                         </div>
                     </div>
-                    <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center text-muted small">
+                    <div class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center text-muted small" style="font-size: 12px;">
                         <span>Selisih Penjualan:</span>
                         <span id="dailyDiffText" class="fw-bold {{ $todayVsYesterdayDiff >= 0 ? 'text-success' : 'text-danger' }}">
                             {{ $todayVsYesterdayDiff >= 0 ? 'Surplus (+)' : 'Defisit (-)' }} Rp {{ number_format(abs($todayVsYesterdayDiff), 0, ',', '.') }}
@@ -250,28 +521,30 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- This Month vs Last Month -->
-            <div class="col-md-6">
-                <div class="card card-stat p-4" style="border-left: 5px solid #0288d1 !important;">
+
+            <!-- Monthly Comparison -->
+            <div class="col-12 col-lg-6">
+                <div class="card-comparison p-3 p-md-4" style="border-top: 3px solid var(--ka-amber-600);">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="text-muted small fw-bold text-uppercase"><i class="bi bi-calendar-range me-1"></i> Perbandingan Bulanan (MoM)</div>
-                        <span id="monthlyGrowthBadge" class="badge {{ $thisMonthVsLastMonthDiff >= 0 ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2 shadow-sm">
+                        <div class="fw-bold text-dark d-flex align-items-center gap-2" style="font-size: 0.95rem;">
+                            <i class="bi bi-calendar3-range text-warning"></i> Perbandingan Bulanan (MoM)
+                        </div>
+                        <span id="monthlyGrowthBadge" class="badge {{ $thisMonthVsLastMonthDiff >= 0 ? 'bg-success' : 'bg-danger' }} rounded-pill px-2.5 py-1 fw-bold shadow-sm" style="font-size: 11px;">
                             <i id="monthlyGrowthIcon" class="bi {{ $thisMonthVsLastMonthDiff >= 0 ? 'bi-graph-up-arrow' : 'bi-graph-down-arrow' }} me-1"></i>
                             <span id="monthlyGrowthPercent">{{ $thisMonthVsLastMonthDiff >= 0 ? '+' : '' }}{{ $thisMonthVsLastMonthPercent }}%</span>
                         </span>
                     </div>
-                    <div class="row align-items-center">
+                    <div class="row g-2 align-items-center">
                         <div class="col-6 border-end">
-                            <small id="monthlyPrimaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Bulan Ini</small>
-                            <h4 id="monthlyPrimaryTotal" class="fw-bold text-dark mb-0">Rp {{ number_format($thisMonthTotal, 0, ',', '.') }}</h4>
+                            <small id="monthlyPrimaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.72rem;">Bulan Ini</small>
+                            <h4 id="monthlyPrimaryTotal" class="fw-bold text-dark mb-0 tabular-nums fs-5 fs-md-4">Rp {{ number_format($thisMonthTotal, 0, ',', '.') }}</h4>
                         </div>
-                        <div class="col-6">
-                            <small id="monthlySecondaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.75rem;">Bulan Kemarin</small>
-                            <h5 id="monthlySecondaryTotal" class="fw-semibold text-secondary mb-0">Rp {{ number_format($lastMonthTotal, 0, ',', '.') }}</h5>
+                        <div class="col-6 ps-3">
+                            <small id="monthlySecondaryLabel" class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.72rem;">Bulan Kemarin</small>
+                            <h5 id="monthlySecondaryTotal" class="fw-semibold text-secondary mb-0 tabular-nums fs-6 fs-md-5">Rp {{ number_format($lastMonthTotal, 0, ',', '.') }}</h5>
                         </div>
                     </div>
-                    <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center text-muted small">
+                    <div class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center text-muted small" style="font-size: 12px;">
                         <span>Selisih Penjualan:</span>
                         <span id="monthlyDiffText" class="fw-bold {{ $thisMonthVsLastMonthDiff >= 0 ? 'text-success' : 'text-danger' }}">
                             {{ $thisMonthVsLastMonthDiff >= 0 ? 'Surplus (+)' : 'Defisit (-)' }} Rp {{ number_format(abs($thisMonthVsLastMonthDiff), 0, ',', '.') }}
@@ -280,93 +553,117 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Interactive Sales Chart -->
-        <div class="row mb-5">
+
+        <!-- Interactive Chart Row -->
+        <div class="row mb-3 mb-md-4">
             <div class="col-12">
-                <div class="card top-menu-card p-4">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-                        <h5 class="fw-bold m-0"><i class="bi bi-graph-up text-primary me-2"></i> Analisis & Tren Grafik Penjualan</h5>
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <!-- Date Selectors (Primary & Secondary) -->
-                            <input type="date" id="chartDatePrimary" class="form-control form-control-sm rounded-pill shadow-sm border-success text-success fw-bold d-none" style="width: 135px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->toDateString() }}">
+                <div class="card top-menu-card p-3 p-md-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-3">
+                        <div>
+                            <h5 class="fw-bold m-0 d-flex align-items-center gap-2" style="font-size: 1.05rem;">
+                                <i class="bi bi-graph-up text-success"></i> Analisis & Tren Grafik Penjualan
+                            </h5>
+                            <small class="text-muted d-block" style="font-size: 0.8rem;">Grafik tren pendapatan berkala untuk evaluasi performa restoran.</small>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2 flex-wrap w-100 w-md-auto justify-content-start justify-content-md-end">
+                            <!-- Date Selectors -->
+                            <input type="date" id="chartDatePrimary" class="form-control form-control-sm rounded-pill shadow-sm border-success text-success fw-bold d-none" style="width: 130px; font-size: 12px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->toDateString() }}">
                             <span id="comparisonSeparatorDate" class="text-muted small fw-bold d-none">vs</span>
-                            <input type="date" id="chartDateSecondary" class="form-control form-control-sm rounded-pill shadow-sm border-info text-info fw-bold d-none" style="width: 135px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->subDay()->toDateString() }}">
+                            <input type="date" id="chartDateSecondary" class="form-control form-control-sm rounded-pill shadow-sm border-info text-info fw-bold d-none" style="width: 130px; font-size: 12px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->subDay()->toDateString() }}">
 
-                            <!-- Month Selectors (Primary & Secondary) -->
-                            <input type="month" id="chartMonthPrimary" class="form-control form-control-sm rounded-pill shadow-sm border-success text-success fw-bold d-none" style="width: 135px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->format('Y-m') }}">
+                            <!-- Month Selectors -->
+                            <input type="month" id="chartMonthPrimary" class="form-control form-control-sm rounded-pill shadow-sm border-success text-success fw-bold d-none" style="width: 130px; font-size: 12px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->format('Y-m') }}">
                             <span id="comparisonSeparatorMonth" class="text-muted small fw-bold d-none">vs</span>
-                            <input type="month" id="chartMonthSecondary" class="form-control form-control-sm rounded-pill shadow-sm border-info text-info fw-bold d-none" style="width: 135px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->subMonth()->format('Y-m') }}">
+                            <input type="month" id="chartMonthSecondary" class="form-control form-control-sm rounded-pill shadow-sm border-info text-info fw-bold d-none" style="width: 130px; font-size: 12px;" onchange="loadComparisonData()" value="{{ \Carbon\Carbon::now()->subMonth()->format('Y-m') }}">
 
-                            <div class="btn-group shadow-sm rounded-pill p-1 bg-light" role="group" style="border: 1px solid rgba(0,0,0,0.05);">
-                                <button type="button" class="btn btn-sm btn-success rounded-pill px-3 active" id="btnChart7Days" onclick="switchChartMode('7days')">7 Hari Terakhir</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-pill px-3" id="btnChartTodayYesterday" onclick="switchChartMode('today_yesterday')">Hari Ini vs Kemarin</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-pill px-3" id="btnChartMonthLastMonth" onclick="switchChartMode('month_lastmonth')">Bulan Ini vs Bulan Kemarin</button>
+                            <!-- Toggle Buttons with Touch Scroll Container -->
+                            <div class="chart-toggle-scroll-wrap">
+                                <div class="bg-light p-1 rounded-pill d-inline-flex border chart-toggle-pills" style="background: var(--ka-slate-100);">
+                                    <button type="button" class="chart-toggle-btn active" id="btnChart7Days" onclick="switchChartMode('7days')">7 Hari Terakhir</button>
+                                    <button type="button" class="chart-toggle-btn" id="btnChartTodayYesterday" onclick="switchChartMode('today_yesterday')">Hari Ini vs Kemarin</button>
+                                    <button type="button" class="chart-toggle-btn" id="btnChartMonthLastMonth" onclick="switchChartMode('month_lastmonth')">Bulan Ini vs Lalu</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <canvas id="salesChart" height="80"></canvas>
+
+                    <div class="chart-canvas-container">
+                        <canvas id="salesChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row g-4">
-            <div class="col-lg-6">
-                <div class="card top-menu-card h-100 p-2">
-                    <div class="card-header bg-white border-0 pt-4 pb-2 px-4">
-                        <h5 class="fw-bold m-0"><i class="bi bi-graph-up-arrow text-success me-2"></i> Laporan Laba Rugi {{ $filterText }}</h5>
+        <!-- Profit / Loss & Top 5 Menu (Row 5) -->
+        <div class="row g-3 g-md-4">
+            <!-- Laba Bersih -->
+            <div class="col-12 col-lg-6">
+                <div class="card top-menu-card h-100 p-3 p-md-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
+                        <h5 class="fw-bold m-0 d-flex align-items-center gap-2" style="font-size: 1.05rem;">
+                            <i class="bi bi-pie-chart text-success"></i> Estimasi Laba Rugi {{ $filterText }}
+                        </h5>
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2.5 py-1" style="font-size: 11px;">Margin Sehat</span>
                     </div>
-                    <div class="card-body px-4">
-                        <div class="bg-light rounded-4 p-4 mb-4">
-                            <div class="d-flex justify-content-between mb-3 border-bottom border-secondary border-opacity-25 pb-3">
-                                <span class="text-muted fw-semibold">Total Pemasukan (Omset)</span>
-                                <span class="fw-bold fs-5">Rp {{ number_format($totalSales, 0, ',', '.') }}</span>
+
+                    <div class="p-3 p-md-4 rounded-3 mb-3" style="background: var(--ka-canvas-bg); border: 1px solid var(--ka-slate-200);">
+                        <div class="d-flex justify-content-between mb-2 mb-md-3 border-bottom pb-2 pb-md-3">
+                            <span class="text-muted fw-semibold" style="font-size: 0.85rem;">Total Pemasukan (Omset)</span>
+                            <span class="fw-bold fs-6 fs-md-5 tabular-nums">Rp {{ number_format($totalSales, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 mb-md-3 border-bottom pb-2 pb-md-3">
+                            <span class="text-muted fw-semibold" style="font-size: 0.85rem;">Estimasi HPP (Modal Pokok)</span>
+                            <span class="fw-bold text-danger fs-6 fs-md-5 tabular-nums">- Rp {{ number_format($totalSales - $profit, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 flex-wrap gap-2">
+                            <div>
+                                <span class="fw-bold fs-6 fs-md-5 d-block" style="color: var(--ka-emerald-800);">Laba Bersih (Net Profit)</span>
+                                <small class="text-muted" style="font-size: 0.75rem;">Sebelum beban operasional non-menu</small>
                             </div>
-                            <div class="d-flex justify-content-between mb-3 border-bottom border-secondary border-opacity-25 pb-3">
-                                <span class="text-muted fw-semibold">Total Harga Pokok (HPP)</span>
-                                <span class="fw-bold text-danger fs-5">- Rp {{ number_format($totalSales - $profit, 0, ',', '.') }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-4">
-                                <span class="fw-bold text-success fs-5">Laba Bersih (Profit)</span>
-                                <span class="fw-bold text-success display-6">Rp {{ number_format($profit, 0, ',', '.') }}</span>
-                            </div>
+                            <span class="fw-bolder fs-4 fs-md-3 tabular-nums" style="color: var(--ka-emerald-700);">
+                                Rp {{ number_format($profit, 0, ',', '.') }}
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-lg-6">
-                <div class="card top-menu-card h-100 p-2">
-                    <div class="card-header bg-white border-0 pt-4 pb-2 px-4">
-                        <h5 class="fw-bold m-0"><i class="bi bi-star-fill text-warning me-2"></i> 5 Menu Terlaris {{ $filterText }}</h5>
+
+            <!-- Top 5 Menu Terlaris -->
+            <div class="col-12 col-lg-6">
+                <div class="card top-menu-card h-100 p-3 p-md-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
+                        <h5 class="fw-bold m-0 d-flex align-items-center gap-2" style="font-size: 1.05rem;">
+                            <i class="bi bi-award-fill text-warning"></i> 5 Menu Terlaris {{ $filterText }}
+                        </h5>
+                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-2.5 py-1" style="font-size: 11px;">Favorit Pelanggan</span>
                     </div>
-                    <div class="card-body px-4">
-                        @if($topProducts->count() > 0)
+
+                    @if($topProducts->count() > 0)
+                        <div class="d-flex flex-column gap-2">
                             @foreach($topProducts as $idx => $item)
-                            <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-3 rounded-4">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="bg-warning text-white fw-bold rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                        {{ $idx+1 }}
+                            <div class="d-flex justify-content-between align-items-center p-2.5 p-md-3 rounded-3" style="background: var(--ka-canvas-bg); border: 1px solid var(--ka-slate-100);">
+                                <div class="d-flex align-items-center gap-2 gap-md-3 overflow-hidden">
+                                    <div class="rank-circle {{ $idx == 0 ? 'bg-warning text-dark' : ($idx == 1 ? 'bg-secondary text-white' : 'bg-light text-dark border') }}">
+                                        {{ $idx + 1 }}
                                     </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold">{{ $item->product->name ?? 'Unknown' }}</h6>
-                                        <small class="text-muted">{{ $item->product->category->name ?? '' }}</small>
+                                    <div class="text-truncate">
+                                        <h6 class="mb-0 fw-bold text-dark text-truncate" style="font-size: 13.5px;">{{ $item->product->name ?? 'Unknown Menu' }}</h6>
+                                        <small class="text-muted" style="font-size: 11px;">{{ $item->product->category->name ?? 'Kategori' }}</small>
                                     </div>
                                 </div>
-                                <div class="bg-success bg-opacity-10 text-success fw-bold px-3 py-1 rounded-pill">
+                                <div class="badge rounded-pill px-2.5 py-1.5 fw-bold flex-shrink-0" style="background: var(--ka-emerald-50); color: var(--ka-emerald-800); border: 1px solid var(--ka-emerald-200); font-size: 11.5px;">
                                     {{ $item->total_qty }} Porsi
                                 </div>
                             </div>
                             @endforeach
-                        @else
-                            <div class="text-center py-5 text-muted">
-                                <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
-                                Belum ada data penjualan pada periode ini.
-                            </div>
-                        @endif
-                    </div>
+                        </div>
+                    @else
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                            <span style="font-size: 13px;">Belum ada riwayat penjualan pada filter periode ini.</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -376,9 +673,12 @@
 <!-- Modal Stok Menipis -->
 <div class="modal fade" id="lowStockModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-header border-0 bg-warning bg-opacity-10 rounded-top-4 p-4">
-                <h5 class="modal-title fw-bold text-warning"><i class="bi bi-exclamation-triangle-fill me-2"></i> Daftar Stok Menipis</h5>
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header border-0 p-4" style="background: var(--ka-amber-50); border-bottom: 1px solid var(--ka-amber-200) !important;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
+                    <h5 class="modal-title fw-bold text-dark mb-0">Peringatan Stok Menipis</h5>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -386,10 +686,10 @@
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead>
-                                <tr class="text-muted small">
-                                    <th>Nama Produk</th>
-                                    <th class="text-center">Stok Sisa</th>
-                                    <th class="text-center">Min Stok</th>
+                                <tr class="text-muted small text-uppercase">
+                                    <th>Nama Menu</th>
+                                    <th class="text-center">Sisa Stok</th>
+                                    <th class="text-center">Batas Min</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -397,9 +697,9 @@
                                 <tr>
                                     <td class="fw-bold">{{ $item->name }}</td>
                                     <td class="text-center">
-                                        <span class="badge bg-danger rounded-pill px-3 py-2">{{ $item->stock }}</span>
+                                        <span class="badge bg-danger rounded-pill px-3 py-1">{{ $item->stock }}</span>
                                     </td>
-                                    <td class="text-center text-muted">{{ $item->min_stock }}</td>
+                                    <td class="text-center text-muted fw-semibold">{{ $item->min_stock }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -407,18 +707,19 @@
                     </div>
                 @else
                     <div class="text-center text-muted py-4">
-                        <i class="bi bi-check-circle fs-1 text-success d-block mb-3"></i>
-                        Stok semua produk dalam keadaan aman.
+                        <i class="bi bi-check-circle-fill fs-1 text-success d-block mb-3"></i>
+                        Semua stok bahan & menu saat ini dalam batas aman.
                     </div>
                 @endif
             </div>
             <div class="modal-footer border-0 p-4 pt-0">
-                <a href="{{ route('products.index') }}" class="btn btn-outline-warning rounded-pill px-4 fw-bold w-100">Kelola Produk</a>
+                <a href="{{ route('products.index') }}" class="btn btn-ka-primary w-100 text-center">Kelola Inventori Produk &rarr;</a>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -427,7 +728,6 @@
         const dateInput = document.getElementById('customDateInput');
         if (select.value === 'custom_date') {
             dateInput.classList.remove('d-none');
-            // Do not submit immediately, let user pick a date. They can trigger submit by changing date
         } else {
             dateInput.classList.add('d-none');
             document.getElementById('filterForm').submit();
@@ -441,13 +741,16 @@
             datasets: [{
                 label: 'Penjualan Harian (Rp)',
                 data: {!! json_encode($chartData ?? []) !!},
-                borderColor: '#2e7d32',
-                backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                borderColor: '#047857',
+                backgroundColor: 'rgba(4, 120, 87, 0.08)',
                 borderWidth: 3,
-                pointBackgroundColor: '#f57c00',
-                pointRadius: 5,
+                pointBackgroundColor: '#d97706',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
                 fill: true,
-                tension: 0.4
+                tension: 0.35
             }]
         }
     };
@@ -457,7 +760,6 @@
     function switchChartMode(mode) {
         currentMode = mode;
 
-        // Toggle active button style
         const buttons = {
             '7days': document.getElementById('btnChart7Days'),
             'today_yesterday': document.getElementById('btnChartTodayYesterday'),
@@ -467,13 +769,12 @@
         Object.keys(buttons).forEach(key => {
             const btn = buttons[key];
             if (key === mode) {
-                btn.className = 'btn btn-sm btn-success rounded-pill px-3 active';
+                btn.className = 'chart-toggle-btn active';
             } else {
-                btn.className = 'btn btn-sm btn-outline-secondary border-0 rounded-pill px-3';
+                btn.className = 'chart-toggle-btn';
             }
         });
 
-        // Show/hide inputs based on mode
         const datePrimary = document.getElementById('chartDatePrimary');
         const dateSecondary = document.getElementById('chartDateSecondary');
         const separatorDate = document.getElementById('comparisonSeparatorDate');
@@ -490,7 +791,6 @@
             monthSecondary.classList.add('d-none');
             separatorMonth.classList.add('d-none');
 
-            // Reset chart to default preloaded 7 days
             salesChart.data.labels = chartDataSets['7days'].labels;
             salesChart.data.datasets = chartDataSets['7days'].datasets;
             salesChart.options.plugins.legend.display = false;
@@ -539,36 +839,38 @@
             const data = await response.json();
             
             if (data.success) {
-                // Update chart
                 salesChart.data.labels = data.labels;
                 salesChart.data.datasets = [
                     {
                         label: data.primary_label + ' (Rp)',
                         data: data.primary_data,
-                        borderColor: '#2e7d32',
-                        backgroundColor: 'rgba(46, 125, 50, 0.05)',
+                        borderColor: '#047857',
+                        backgroundColor: 'rgba(4, 120, 87, 0.08)',
                         borderWidth: 3,
-                        pointBackgroundColor: '#f57c00',
-                        pointRadius: 4,
+                        pointBackgroundColor: '#d97706',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.35
                     },
                     {
                         label: data.secondary_label + ' (Rp)',
                         data: data.secondary_data,
-                        borderColor: '#0288d1',
-                        backgroundColor: 'rgba(2, 136, 209, 0.05)',
+                        borderColor: '#0284c7',
+                        backgroundColor: 'rgba(2, 132, 199, 0.05)',
                         borderWidth: 3,
-                        pointBackgroundColor: '#00acc1',
-                        pointRadius: 4,
+                        pointBackgroundColor: '#0284c7',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.35
                     }
                 ];
                 salesChart.options.plugins.legend.display = true;
                 salesChart.update();
 
-                // Update cards dynamically based on mode
                 if (currentMode === 'today_yesterday') {
                     const badge = document.getElementById('dailyGrowthBadge');
                     const icon = document.getElementById('dailyGrowthIcon');
@@ -577,10 +879,10 @@
                     percentText.innerText = (data.diff >= 0 ? '+' : '') + data.percent + '%';
                     
                     if (data.diff >= 0) {
-                        badge.className = 'badge bg-success rounded-pill px-3 py-2 shadow-sm';
+                        badge.className = 'badge bg-success rounded-pill px-3 py-1 fw-bold shadow-sm';
                         icon.className = 'bi bi-graph-up-arrow me-1';
                     } else {
-                        badge.className = 'badge bg-danger rounded-pill px-3 py-2 shadow-sm';
+                        badge.className = 'badge bg-danger rounded-pill px-3 py-1 fw-bold shadow-sm';
                         icon.className = 'bi bi-graph-down-arrow me-1';
                     }
 
@@ -591,11 +893,7 @@
                     
                     const diffText = document.getElementById('dailyDiffText');
                     diffText.innerText = data.formatted_diff;
-                    if (data.diff >= 0) {
-                        diffText.className = 'fw-bold text-success';
-                    } else {
-                        diffText.className = 'fw-bold text-danger';
-                    }
+                    diffText.className = data.diff >= 0 ? 'fw-bold text-success' : 'fw-bold text-danger';
                 } else if (currentMode === 'month_lastmonth') {
                     const badge = document.getElementById('monthlyGrowthBadge');
                     const icon = document.getElementById('monthlyGrowthIcon');
@@ -604,10 +902,10 @@
                     percentText.innerText = (data.diff >= 0 ? '+' : '') + data.percent + '%';
                     
                     if (data.diff >= 0) {
-                        badge.className = 'badge bg-success rounded-pill px-3 py-2 shadow-sm';
+                        badge.className = 'badge bg-success rounded-pill px-3 py-1 fw-bold shadow-sm';
                         icon.className = 'bi bi-graph-up-arrow me-1';
                     } else {
-                        badge.className = 'badge bg-danger rounded-pill px-3 py-2 shadow-sm';
+                        badge.className = 'badge bg-danger rounded-pill px-3 py-1 fw-bold shadow-sm';
                         icon.className = 'bi bi-graph-down-arrow me-1';
                     }
 
@@ -618,17 +916,11 @@
                     
                     const diffText = document.getElementById('monthlyDiffText');
                     diffText.innerText = data.formatted_diff;
-                    if (data.diff >= 0) {
-                        diffText.className = 'fw-bold text-success';
-                    } else {
-                        diffText.className = 'fw-bold text-danger';
-                    }
+                    diffText.className = data.diff >= 0 ? 'fw-bold text-success' : 'fw-bold text-danger';
                 }
-            } else {
-                console.error("Failed to load comparison data: ", data.message);
             }
         } catch (error) {
-            console.error("AJAX Error loading comparison data: ", error);
+            console.error("AJAX Error: ", error);
         } finally {
             canvas.style.opacity = '1';
         }
@@ -645,20 +937,21 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: { 
                         display: false,
                         position: 'top',
                         labels: {
-                            font: { family: 'Poppins', size: 12 }
+                            font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: 'bold' }
                         }
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(0,0,0,0.8)',
-                        titleFont: { family: 'Poppins', size: 13, weight: 'bold' },
-                        bodyFont: { family: 'Poppins', size: 12 },
+                        backgroundColor: '#0f172a',
+                        titleFont: { family: "'Plus Jakarta Sans', sans-serif", size: 13, weight: 'bold' },
+                        bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12 },
                         padding: 12,
-                        cornerRadius: 10,
+                        cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
                                 let label = context.dataset.label || '';
@@ -677,18 +970,21 @@
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            font: { family: 'Poppins' },
+                            font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 },
+                            color: '#64748b',
                             callback: function(value) {
-                                return 'Rp ' + value.toLocaleString('id-ID');
+                                return 'Rp ' + (value >= 1000 ? (value/1000).toLocaleString('id-ID') + 'k' : value);
                             }
                         },
                         grid: {
-                            color: 'rgba(0,0,0,0.05)'
+                            color: 'rgba(226, 232, 240, 0.6)',
+                            drawBorder: false
                         }
                     },
                     x: {
                         ticks: {
-                            font: { family: 'Poppins' }
+                            font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 },
+                            color: '#64748b'
                         },
                         grid: {
                             display: false

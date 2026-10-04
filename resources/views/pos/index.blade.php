@@ -3,36 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS - Rumah Makan Kulu Asri</title>
-    <!-- Bootstrap CSS -->
+    <title>POS Kasir — Rumah Makan Kulu Asri</title>
+
+    <!-- Design Tokens & Google Fonts -->
+    <link rel="stylesheet" href="{{ asset('css/design-tokens.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            font-family: var(--font-family-sans);
+            background: var(--color-background);
+            color: var(--color-text-main);
             overflow-x: hidden;
         }
-        /* Rich Colors & Gradients */
-        .bg-brand-green { background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%) !important; color: white; }
-        .bg-brand-orange { background: linear-gradient(135deg, #f57c00 0%, #e65100 100%) !important; color: white; }
-        .text-brand-green { color: #2e7d32 !important; }
-        .text-brand-orange { color: #f57c00 !important; }
-        
+
         /* Layout */
         .pos-container { height: 100vh; display: flex; flex-direction: column; }
         .pos-header { 
-            height: 70px; 
-            background: rgba(255, 255, 255, 0.9) !important;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 30px rgba(0,0,0,0.05); 
+            height: 72px; 
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--color-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
             z-index: 10; position: relative; 
         }
-        .pos-body { flex: 1; display: none; overflow: hidden; } /* Hidden by default */
-        .checkout-screen { display: none; flex: 1; overflow-y: auto; background: #fdfbfb; padding: 30px; }
+        .pos-body { flex: 1; display: none; overflow: hidden; }
+        .checkout-screen { display: none; flex: 1; overflow-y: auto; background: var(--color-background); padding: 30px; }
         
-        /* Welcome Screen */
+        /* Welcome Screen with Atmospheric Backdrop */
         .welcome-screen {
             flex: 1;
             display: flex;
@@ -44,9 +48,9 @@
         .welcome-screen::before {
             content: '';
             position: absolute;
-            top:0; left:0; right:0; bottom:0;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(5px);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, rgba(248, 250, 247, 0.92) 0%, rgba(241, 245, 239, 0.97) 100%);
+            backdrop-filter: blur(8px);
         }
         .welcome-content {
             position: relative;
@@ -54,91 +58,287 @@
             text-align: center;
             max-width: 1200px;
             width: 100%;
-            padding: 0 20px;
+            padding: 0 24px;
         }
+        
+        .welcome-badge-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--ka-emerald-50);
+            color: var(--ka-emerald-800);
+            border: 1px solid var(--ka-emerald-200);
+            padding: 6px 18px;
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--ka-slate-900);
+            letter-spacing: -0.03em;
+            margin-bottom: 6px;
+        }
+
+        .welcome-subtitle {
+            font-family: var(--font-family-serif);
+            font-style: italic;
+            font-size: 1.25rem;
+            color: var(--ka-amber-600);
+            font-weight: 700;
+            margin-bottom: 38px;
+        }
+
+        /* Tactile Action Cards */
         .action-btn {
-            width: 235px;
-            height: 235px;
-            border-radius: 28px;
+            width: 250px;
+            height: 250px;
+            border-radius: var(--radius-2xl);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 1.35rem;
-            font-weight: 700;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 24px;
+            transition: all var(--transition-normal);
+            border: 1px solid rgba(255, 255, 255, 0.25);
             text-decoration: none;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
         }
-        .action-btn i { font-size: 4.5rem; margin-bottom: 12px; }
-        .action-btn:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 25px 45px rgba(0,0,0,0.15); }
-        .btn-order-menu { background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); color: white; }
-        .btn-order-taker { background: linear-gradient(135deg, #ff9800 0%, #ef6c00 100%); color: white; }
-        .btn-order-qr { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; }
-        .btn-income-today { background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; }
+        .action-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 40%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 100%);
+            border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+            pointer-events: none;
+        }
+        .action-btn i { 
+            font-size: 3.8rem; 
+            margin-bottom: 14px; 
+            transition: transform var(--transition-normal);
+        }
+        .action-btn span {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        .action-btn small {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+        .action-btn:hover { 
+            transform: translateY(-8px) scale(1.02); 
+        }
+        .action-btn:hover i {
+            transform: scale(1.08);
+        }
+        .action-btn:active {
+            transform: translateY(-2px) scale(0.99);
+        }
+
+        /* Card 1: Pesanan Baru (Emerald) */
+        .btn-order-menu { 
+            background: linear-gradient(145deg, #059669 0%, #047857 60%, #064e3b 100%); 
+            color: white; 
+            box-shadow: 0 12px 28px -4px rgba(4, 120, 87, 0.35);
+        }
+        .btn-order-menu:hover {
+            box-shadow: 0 20px 36px -4px rgba(4, 120, 87, 0.45);
+            color: white;
+        }
+
+        /* Card 2: Kasir & Pembayaran (Amber) */
+        .btn-order-taker { 
+            background: linear-gradient(145deg, #f59e0b 0%, #d97706 60%, #b45309 100%); 
+            color: white; 
+            box-shadow: 0 12px 28px -4px rgba(217, 119, 6, 0.35);
+        }
+        .btn-order-taker:hover {
+            box-shadow: 0 20px 36px -4px rgba(217, 119, 6, 0.45);
+            color: white;
+        }
+
+        /* Card 3: Pesanan QR (Sapphire) */
+        .btn-order-qr { 
+            background: linear-gradient(145deg, #0284c7 0%, #0369a1 60%, #075985 100%); 
+            color: white; 
+            box-shadow: 0 12px 28px -4px rgba(2, 132, 199, 0.35);
+        }
+        .btn-order-qr:hover {
+            box-shadow: 0 20px 36px -4px rgba(2, 132, 199, 0.45);
+            color: white;
+        }
+
+        /* Card 4: Pendapatan Hari Ini (Royal Slate) */
+        .btn-income-today { 
+            background: linear-gradient(145deg, #334155 0%, #1e293b 60%, #0f172a 100%); 
+            color: white; 
+            box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.35);
+        }
+        .btn-income-today:hover {
+            box-shadow: 0 20px 36px -4px rgba(15, 23, 42, 0.45);
+            color: white;
+        }
 
         /* Products Area */
-        .products-area { flex: 7; padding: 25px; overflow-y: auto; background: transparent; }
+        .products-area { flex: 7; padding: 24px 28px; overflow-y: auto; background: transparent; }
         
         .category-pills .btn { 
-            border-radius: 30px; margin-right: 12px; padding: 10px 25px; 
-            font-weight: 600; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            background: white; border: none; color: #555;
+            border-radius: var(--radius-full); 
+            margin-right: 10px; 
+            padding: 8px 22px; 
+            font-weight: 600; 
+            font-size: 13.5px;
+            transition: all var(--transition-fast); 
+            box-shadow: var(--shadow-xs);
+            background: #ffffff; 
+            border: 1px solid var(--color-border); 
+            color: var(--ka-slate-700);
+            white-space: nowrap;
         }
         .category-pills .btn.active, .category-pills .btn:hover { 
-            background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%); 
-            color: white; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(46, 125, 50, 0.3);
+            background: var(--ka-emerald-700); 
+            color: white; 
+            border-color: var(--ka-emerald-700);
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 14px rgba(4, 120, 87, 0.28);
         }
         
         .product-card { 
-            border: none; border-radius: 20px; 
-            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.04); 
-            transition: all 0.3s; cursor: pointer; height: 100%;
+            border: 1px solid var(--color-border); 
+            border-radius: var(--radius-lg); 
+            background: #ffffff;
+            box-shadow: var(--shadow-xs); 
+            transition: all var(--transition-normal); 
+            cursor: pointer; 
+            height: 100%;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         .product-card:hover { 
-            transform: translateY(-8px) scale(1.02); 
-            box-shadow: 0 15px 35px rgba(46, 125, 50, 0.2); 
+            transform: translateY(-5px); 
+            box-shadow: var(--shadow-md); 
+            border-color: rgba(4, 120, 87, 0.3);
+        }
+        .product-card:active {
+            transform: translateY(0) scale(0.98);
         }
         .product-img { 
-            height: 140px; 
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 3.5rem; color: #4caf50; 
+            height: 120px; 
+            background: linear-gradient(135deg, var(--ka-emerald-50) 0%, #e2ece5 100%); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 3rem; 
+            color: var(--ka-emerald-700); 
+            border-bottom: 1px solid var(--color-border-subtle);
         }
-        .product-price { font-weight: 800; color: #f57c00; font-size: 1.25rem; }
+        .product-price { 
+            font-weight: 800; 
+            color: var(--ka-amber-600); 
+            font-size: 1.2rem;
+            font-variant-numeric: tabular-nums; 
+        }
         
         /* Cart Area */
         .cart-area { 
-            flex: 3; background: #ffffff; display: flex; flex-direction: column; 
-            box-shadow: -10px 0 30px rgba(0,0,0,0.05); z-index: 5;
+            flex: 3; 
+            background: #ffffff; 
+            display: flex; 
+            flex-direction: column; 
+            border-left: 1px solid var(--color-border);
+            box-shadow: -8px 0 24px rgba(0,0,0,0.03); 
+            z-index: 5;
         }
-        .cart-header { padding: 25px 20px; background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%); border-bottom: 1px solid #f0f0f0; }
+        .cart-header { 
+            padding: 20px 20px 16px 20px; 
+            background: #ffffff; 
+            border-bottom: 1px solid var(--color-border-subtle); 
+        }
         .cart-items { flex: 1; overflow-y: auto; padding: 0 20px; }
-        .cart-item { padding: 15px 0; border-bottom: 1px dashed #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
+        .cart-item { padding: 14px 0; border-bottom: 1px dashed var(--ka-slate-200); display: flex; justify-content: space-between; align-items: center; }
         
         .qty-input {
-            width: 50px; text-align: center; font-weight: bold; border: 1px solid #ddd; border-radius: 8px; margin: 0 5px;
+            width: 44px; text-align: center; font-weight: 700; border: 1.5px solid var(--ka-slate-200); border-radius: 8px; margin: 0 4px; padding: 4px;
         }
         .qty-btn { 
-            background: #f1f3f5; border: none; color: #2e7d32; font-weight: bold; 
-            width: 30px; height: 30px; border-radius: 8px; cursor: pointer; transition: 0.2s;
+            background: var(--ka-slate-100); border: none; color: var(--ka-emerald-700); font-weight: 800; 
+            width: 30px; height: 30px; border-radius: 8px; cursor: pointer; transition: 0.15s;
+            display: flex; align-items: center; justify-content: center;
         }
-        .qty-btn:hover { background: #e2e6ea; }
+        .qty-btn:hover { background: var(--ka-emerald-50); color: var(--ka-emerald-800); }
         
         .cart-footer { 
-            padding: 25px 20px; background: white; border-top: 1px solid #f0f0f0; 
-            box-shadow: 0 -10px 20px rgba(0,0,0,0.02); 
+            padding: 20px; 
+            background: #ffffff; 
+            border-top: 1px solid var(--color-border); 
+            box-shadow: 0 -8px 20px rgba(0,0,0,0.02); 
         }
-        .total-row { display: flex; justify-content: space-between; font-size: 1.6rem; font-weight: 800; color: #1b5e20; margin-bottom: 20px; }
-        .btn-pay { height: 65px; font-size: 1.3rem; font-weight: 700; border-radius: 15px; box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3); }
-        .btn-pay:hover { box-shadow: 0 12px 25px rgba(46, 125, 50, 0.4); transform: translateY(-2px); }
+        .total-row { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 1.55rem; 
+            font-weight: 800; 
+            color: var(--ka-emerald-700); 
+            margin-bottom: 16px;
+            font-variant-numeric: tabular-nums; 
+        }
+        .btn-pay { 
+            height: 58px; 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            border-radius: var(--radius-md); 
+            background: linear-gradient(135deg, var(--ka-emerald-700) 0%, var(--ka-emerald-800) 100%);
+            border: none;
+            box-shadow: 0 6px 18px rgba(4, 120, 87, 0.3); 
+            transition: all var(--transition-fast);
+        }
+        .btn-pay:hover { 
+            background: linear-gradient(135deg, var(--ka-emerald-600) 0%, var(--ka-emerald-700) 100%);
+            box-shadow: var(--shadow-emerald-glow); 
+            transform: translateY(-2px); 
+        }
+        .btn-pay:active {
+            transform: translateY(0) scale(0.98);
+        }
         
-        .form-control-custom { border-radius: 12px; border: 2px solid #eee; padding: 10px 15px; font-weight: 500; }
-        .form-control-custom:focus { border-color: #2e7d32; box-shadow: 0 0 0 0.25rem rgba(46, 125, 50, 0.1); }
+        .form-control-custom { 
+            border-radius: var(--radius-md); 
+            border: 1.5px solid var(--ka-slate-200); 
+            padding: 10px 14px; 
+            font-weight: 600; 
+            font-size: 13.5px;
+            transition: all var(--transition-fast);
+        }
+        .form-control-custom:focus { 
+            border-color: var(--ka-emerald-600); 
+            box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12); 
+        }
+
+        /* Pulse live cashier badge */
+        .live-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--ka-emerald-500);
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+        }
+        @keyframes pulse {
+            to { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .bi-spin { display: inline-block; animation: spin 0.8s linear infinite; }
     </style>
@@ -149,37 +349,45 @@
     <!-- Header -->
     <div class="pos-header d-flex justify-content-between align-items-center px-4">
         <div class="d-flex align-items-center gap-3">
-            <div class="bg-brand-green rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                <i class="bi bi-shop fs-4 text-white"></i>
+            <div class="rounded-3 d-flex align-items-center justify-content-center text-white" style="width: 44px; height: 44px; background: linear-gradient(135deg, var(--ka-emerald-700) 0%, var(--ka-emerald-900) 100%); box-shadow: 0 4px 10px rgba(4,120,87,0.25);">
+                <i class="bi bi-shop fs-5"></i>
             </div>
             <div>
-                <h3 class="m-0 fw-bold text-brand-green" style="letter-spacing: -0.5px; line-height: 1.1;">Kulu Asri <span class="text-brand-orange">POS</span></h3>
-                <small style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #b45309; font-weight: 700; font-size: 11.5px; display: block; margin-top: 2px;">Kulu Asri - Jagonya Ikan Bakar!</small>
+                <h4 class="m-0 fw-bold" style="letter-spacing: -0.02em; line-height: 1.1; color: var(--ka-slate-900);">
+                    Kulu Asri <span style="color: var(--ka-amber-600);">POS</span>
+                </h4>
+                <small style="font-family: var(--font-family-serif); font-style: italic; color: var(--ka-amber-700); font-weight: 700; font-size: 11.5px; display: block; margin-top: 1px;">
+                    Jagonya Ikan Bakar!
+                </small>
             </div>
             
-            <!-- Home button (hidden on welcome screen) -->
-            <button class="btn btn-outline-secondary rounded-pill ms-3 shadow-sm d-none" id="btn-home" onclick="goHome()">
-                <i class="bi bi-house-door-fill me-1"></i> Beranda
+            <!-- Home button -->
+            <button class="btn btn-outline-secondary btn-sm rounded-pill ms-3 shadow-sm d-none" id="btn-home" onclick="goHome()">
+                <i class="bi bi-arrow-left me-1"></i> Beranda POS
             </button>
         </div>
-        <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-warning fw-bold rounded-pill px-3 shadow-sm position-relative" onclick="showQrOrdersModal()">
-                <i class="bi bi-qr-code-scan me-1"></i> Pesanan QR
+
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm fw-bold rounded-pill px-3 shadow-sm position-relative" style="background: var(--ka-amber-50); color: var(--ka-amber-800); border: 1.5px solid var(--ka-amber-200);" onclick="showQrOrdersModal()">
+                <i class="bi bi-qr-code-scan me-1 text-warning"></i> Pesanan QR
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" id="qrOrdersBadge">0</span>
             </button>
-            <button class="btn btn-outline-danger fw-bold rounded-pill px-4 shadow-sm" onclick="showEodModal()">
-                <i class="bi bi-door-closed me-2"></i> Tutup Toko
+            <button class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3 shadow-sm" onclick="showEodModal()">
+                <i class="bi bi-door-closed me-1"></i> Tutup Toko
             </button>
-            <a href="{{ route('pos.history') }}" class="btn btn-outline-success fw-bold rounded-pill px-4 shadow-sm">
-                <i class="bi bi-clock-history me-2"></i> Riwayat Transaksi
+            <a href="{{ route('pos.history') }}" class="btn btn-sm btn-ka-outline rounded-pill px-3 shadow-sm">
+                <i class="bi bi-clock-history me-1"></i> Riwayat
             </a>
-            <div class="d-flex align-items-center gap-3 border-start ps-4">
+            
+            <div class="d-flex align-items-center gap-3 border-start ps-3 ms-2">
                 <div class="text-end">
-                    <span class="d-block fw-bold text-dark" style="font-size: 1rem;">{{ auth()->user()->name }}</span>
-                    <span class="text-success fw-semibold" style="font-size: 0.8rem;"><i class="bi bi-circle-fill small text-success me-1"></i> Kasir Aktif</span>
+                    <span class="d-block fw-bold text-dark" style="font-size: 0.92rem;">{{ auth()->user()->name }}</span>
+                    <span class="text-success fw-bold d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;">
+                        <span class="live-pulse"></span> Kasir Aktif
+                    </span>
                 </div>
-                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-light rounded-circle p-2 shadow-sm" title="Logout">
-                    <i class="bi bi-power text-danger fs-5"></i>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-light rounded-circle p-2 shadow-sm text-danger" title="Keluar">
+                    <i class="bi bi-power fs-5"></i>
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
             </div>
@@ -189,29 +397,41 @@
     <!-- Welcome Screen -->
     <div class="welcome-screen" id="welcome-screen">
         <div class="welcome-content">
-            <h2 class="fw-bold mb-5" style="color: #2e7d32; font-size: 2.5rem; text-shadow: 0 2px 10px rgba(0,0,0,0.05);">Pilih Aktivitas Kasir</h2>
+            <div class="welcome-badge-header">
+                <i class="bi bi-fire text-warning"></i> Terminal Kasir Kulu Asri
+            </div>
+            <h2 class="welcome-title">Pilih Aktivitas Pelayanan</h2>
+            <div class="welcome-subtitle">"Jagonya Ikan Bakar! — Cepat, Akurat & Ramah Tamu"</div>
+            
             <div class="d-flex gap-4 justify-content-center flex-wrap">
+                <!-- Action 1: Order Baru -->
                 <button class="action-btn btn-order-menu" onclick="openMode('order')">
-                    <i class="bi bi-journal-plus"></i>
+                    <i class="bi bi-journal-check"></i>
                     <span>Pesanan Baru</span>
-                    <small class="fs-6 fw-normal mt-2 opacity-75">Buat Pesanan Baru</small>
+                    <small>Buka Meja & Buat Order</small>
                 </button>
+
+                <!-- Action 2: Pembayaran / Kasir -->
                 <button class="action-btn btn-order-taker" onclick="openMode('payment')">
-                    <i class="bi bi-wallet2"></i>
-                    <span>Kasir / Pembayaran</span>
-                    <small class="fs-6 fw-normal mt-2 opacity-75">Pembayaran / Kasir</small>
+                    <i class="bi bi-cash-stack"></i>
+                    <span>Kasir / Bayar</span>
+                    <small>Selesaikan Tagihan Meja</small>
                 </button>
+
+                <!-- Action 3: Pesanan QR Meja -->
                 <button class="action-btn btn-order-qr position-relative" onclick="showQrOrdersModal()">
                     <span class="position-absolute top-0 end-0 m-3 badge rounded-pill bg-danger fs-6 d-none" id="qrBadgeBig">0</span>
                     <i class="bi bi-qr-code-scan"></i>
                     <span>Pesanan QR</span>
-                    <small class="fs-6 fw-normal mt-2 opacity-75">Order Masuk dari Meja</small>
+                    <small>Order Masuk dari Meja</small>
                 </button>
+
+                <!-- Action 4: Pendapatan Hari Ini -->
                 <button class="action-btn btn-income-today position-relative" onclick="showTodayIncomeModal()">
                     <span class="position-absolute top-0 end-0 m-3 badge rounded-pill bg-white text-dark fw-bold shadow-sm" id="welcomeTodayIncomeBadge" style="font-size: 0.85rem;">Rp 0</span>
-                    <i class="bi bi-cash-coin"></i>
-                    <span>Pendapatan Hari Ini</span>
-                    <small class="fs-6 fw-normal mt-2 opacity-75" id="welcomeTodayIncomeSub">Lacak Pemasukan Hari Ini</small>
+                    <i class="bi bi-coin text-warning"></i>
+                    <span>Omset Hari Ini</span>
+                    <small id="welcomeTodayIncomeSub">Lacak Pemasukan Lunas</small>
                 </button>
             </div>
         </div>
