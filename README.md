@@ -27,6 +27,29 @@ Kedua saluran pesanan ini disinkronkan secara otomatis ke dalam satu sistem dapu
 
 ---
 
+## 📸 Galeri & Screenshot Fitur
+
+### Terminal POS Kasir & Riwayat Transaksi
+| Terminal POS Kasir | Riwayat & Audit Transaksi |
+| :---: | :---: |
+| ![POS Terminal](docs/screenshots/06-pos-kasir-terminal.png) | ![Riwayat Transaksi](docs/screenshots/07-pos-riwayat-transaksi.png) |
+
+### Customer Self-Order (QR Meja) & Halaman Login
+| Mobile QR Self-Order (`390×844`) | Halaman Login |
+| :---: | :---: |
+| <img src="docs/screenshots/08-customer-qr-self-order-mobile.png" width="260" alt="Customer QR Self-Order"/> | ![Login](docs/screenshots/01-login.png) |
+
+### Admin Dashboard & Manajemen Restoran
+| Ringkasan KPI & Kanal Penjualan | Grafik Tren, Laba Rugi & Top Menu |
+| :---: | :---: |
+| ![Admin Dashboard](docs/screenshots/02-admin-dashboard-top.png) | ![Analytics](docs/screenshots/02b-admin-dashboard-analytics.png) |
+
+| Kelola Produk & Stok | Kelola Meja & QR Code | Laporan Transaksi & Export |
+| :---: | :---: | :---: |
+| ![Produk](docs/screenshots/03-admin-products.png) | ![Meja QR](docs/screenshots/04-admin-tables-qr.png) | ![Laporan](docs/screenshots/05-admin-reports.png) |
+
+---
+
 ## 🌟 Keunggulan Utama
 
 ### 1. 📱 Ramah Pemantauan Mobile & Tablet (Owner & Manajemen)
