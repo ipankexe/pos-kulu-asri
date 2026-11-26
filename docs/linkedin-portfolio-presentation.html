@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Kulu Asri — LinkedIn Portfolio Presentation</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --bg-deep: #02241a;
+            --bg-surface: #043929;
+            --primary: #047857;
+            --primary-light: #10b981;
+            --amber: #f59e0b;
+            --amber-dark: #d97706;
+            --flame: #ea580c;
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --text-dim: #94a3b8;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-border: rgba(255, 255, 255, 0.14);
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-serif: 'Playfair Display', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: #011710;
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 16:9 Stage */
+        .slide-deck {
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            width: 100vw;
+            height: 100vh;
+            max-width: calc(100vh * 16 / 9);
+            max-height: calc(100vw * 9 / 16);
+            background: radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.14), transparent 45%),
+                        radial-gradient(circle at 12% 85%, rgba(245, 158, 11, 0.10), transparent 40%),
+                        linear-gradient(135deg, var(--bg-deep) 0%, #032f22 55%, #021d15 100%);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            padding: 44px 56px 56px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.38s ease, transform 0.38s ease;
+            transform: translateY(10px);
+            background: radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.14), transparent 45%),
+                        radial-gradient(circle at 12% 85%, rgba(245, 158, 11, 0.10), transparent 40%),
+                        linear-gradient(135deg, var(--bg-deep) 0%, #032f22 55%, #021d15 100%);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* Top Slide Header */
+        .slide-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            flex-shrink: 0;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: rgba(16, 185, 129, 0.14);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #6ee7b7;
+        }
+
+        .eyebrow.amber {
+            background: rgba(245, 158, 11, 0.14);
+            border-color: rgba(245, 158, 11, 0.38);
+            color: #fcd34d;
+        }
+
+        .slide-brand-mark {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+
+        .slide-brand-mark .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+        }
+
+        /* Typography */
+        .h-title {
+            font-size: clamp(26px, 2.8vw, 38px);
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+
+        .h-title span.accent {
+            background: linear-gradient(135deg, #fcd34d, #fb923c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .h-subtitle {
+            font-size: clamp(13px, 1.25vw, 16px);
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+
+        /* Main Slide Body */
+        .slide-body {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Slide Footer */
+        .slide-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 11px;
+            color: var(--text-dim);
+            flex-shrink: 0;
+        }
+
+        /* Grids */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: center;
+            height: 100%;
+        }
+
+        .grid-split-wide {
+            display: grid;
+            grid-template-columns: 0.92fr 1.28fr;
+            gap: 32px;
+            align-items: center;
+            height: 100%;
+        }
+
+        .grid-split-wide-rev {
+            display: grid;
+            grid-template-columns: 1.28fr 0.92fr;
+            gap: 32px;
+            align-items: center;
+            height: 100%;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px 22px;
+        }
+
+        .glass-card.highlight {
+            background: linear-gradient(135deg, rgba(4, 120, 87, 0.28), rgba(6, 78, 59, 0.35));
+            border-color: rgba(16, 185, 129, 0.35);
+        }
+
+        /* Feature Bullet List */
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+
+        .feature-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            background: rgba(16, 185, 129, 0.16);
+            color: #6ee7b7;
+        }
+
+        .feature-icon.amber {
+            background: rgba(245, 158, 11, 0.16);
+            color: #fcd34d;
+        }
+
+        .feature-icon.flame {
+            background: rgba(234, 88, 12, 0.18);
+            color: #fdba74;
+        }
+
+        .feature-item h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 3px;
+        }
+
+        .feature-item p {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.42;
+        }
+
+        /* Browser Window Frame */
+        .browser-frame {
+            background: #0f172a;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+        }
+
+        .browser-bar {
+            height: 28px;
+            background: #1e293b;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+
+        .browser-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        .browser-dot.red { background: #ef4444; }
+        .browser-dot.yellow { background: #f59e0b; }
+        .browser-dot.green { background: #10b981; }
+
+        .browser-url {
+            margin-left: 10px;
+            background: rgba(15, 23, 42, 0.7);
+            color: #94a3b8;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 5px;
+            flex: 1;
+            max-width: 280px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .browser-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            max-height: 440px;
+            background: #f8faf7;
+        }
+
+        /* Phone Mockup Frame */
+        .phone-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .phone-frame {
+            width: 245px;
+            background: #0f172a;
+            border-radius: 32px;
+            padding: 10px;
+            border: 3px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 26px 65px rgba(0, 0, 0, 0.65);
+            position: relative;
+        }
+
+        .phone-notch {
+            width: 84px;
+            height: 16px;
+            background: #0f172a;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        .phone-frame img {
+            width: 100%;
+            border-radius: 22px;
+            display: block;
+            max-height: 475px;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        /* Cover Slide Specific */
+        .cover-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 1.15fr;
+            gap: 36px;
+            align-items: center;
+            height: 100%;
+        }
+
+        .cover-title {
+            font-size: clamp(36px, 4.2vw, 56px);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-top: 14px;
+        }
+
+        .cover-tagline {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 20px;
+            color: var(--amber);
+            margin-top: 10px;
+        }
+
+        .tech-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 22px;
+        }
+
+        .tech-pill {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #e2e8f0;
+        }
+
+        .cover-showcase {
+            position: relative;
+            height: 440px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cover-desktop {
+            width: 92%;
+            transform: translate(-18px, -16px);
+            z-index: 1;
+        }
+
+        .cover-mobile {
+            position: absolute;
+            right: -6px;
+            bottom: -10px;
+            width: 155px;
+            border-radius: 22px;
+            padding: 7px;
+            border-width: 2px;
+            z-index: 2;
+        }
+
+        .cover-mobile img {
+            border-radius: 16px;
+            max-height: 310px;
+        }
+
+        /* Dual Stacked / Side Screenshots */
+        .dual-frames {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .dual-frames .browser-frame img {
+            max-height: 290px;
+        }
+
+        .frame-caption {
+            padding: 8px 14px;
+            background: rgba(2, 36, 26, 0.92);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .frame-caption span.badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(245, 158, 11, 0.18);
+            color: #fcd34d;
+        }
+
+        /* Architecture Flow (Slide 2) */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .arch-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .arch-node {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .arch-node.center {
+            background: linear-gradient(135deg, rgba(4, 120, 87, 0.35), rgba(6, 78, 59, 0.45));
+            border-color: rgba(16, 185, 129, 0.45);
+            text-align: center;
+        }
+
+        .arch-arrow {
+            text-align: center;
+            color: var(--amber);
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .stat-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 14px;
+            text-align: center;
+        }
+
+        .stat-box .num {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--amber);
+        }
+
+        .stat-box .lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Tech Stack Cards (Slide 10) */
+        .stack-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .stack-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 16px 18px;
+        }
+
+        .stack-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fcd34d;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stack-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        .cta-banner {
+            margin-top: 18px;
+            background: linear-gradient(90deg, rgba(4, 120, 87, 0.45), rgba(217, 119, 6, 0.25));
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            border-radius: 16px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .cta-links {
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .cta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            text-decoration: none;
+            color: #02241a;
+            background: var(--amber);
+        }
+
+        .cta-pill.outline {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+        }
+
+        /* Controls (Web View Only) */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-light), var(--amber));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        .top-actions {
+            position: fixed;
+            top: 16px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #f8fafc;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-family: var(--font-sans);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(4, 120, 87, 0.9);
+        }
+
+        .nav-controls {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(2, 23, 16, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            padding: 6px 14px;
+            border-radius: 999px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+        }
+
+        .slide-counter {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        /* Print / Export to LinkedIn 16:9 PDF */
+        @page {
+            size: 1280px 720px;
+            margin: 0;
+        }
+
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            html, body {
+                width: 1280px;
+                height: auto;
+                overflow: visible !important;
+                background: #02241a !important;
+            }
+            .progress-bar,
+            .nav-controls,
+            .top-actions {
+                display: none !important;
+            }
+            .slide-deck {
+                position: static !important;
+                width: 1280px !important;
+                max-width: none !important;
+                max-height: none !important;
+                height: auto !important;
+                box-shadow: none !important;
+                overflow: visible !important;
+            }
+            .slide {
+                position: relative !important;
+                width: 1280px !important;
+                height: 720px !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: none !important;
+                pointer-events: auto !important;
+                page-break-after: always;
+                break-after: page;
+                overflow: hidden !important;
+            }
+            .slide:last-child {
+                page-break-after: auto;
+                break-after: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="top-actions">
+    <button class="action-btn" onclick="window.print()" title="Simpan sebagai PDF untuk LinkedIn">
+        <i class="bi bi-file-earmark-pdf-fill"></i> Export PDF (LinkedIn)
+    </button>
+</div>
+
+<div class="slide-deck">
+
+    <!-- SLIDE 1: COVER -->
+    <section class="slide active">
+        <div class="slide-header">
+            <span class="eyebrow amber"><i class="bi bi-stars"></i> Portfolio Case Study &bull; Full-Stack Web App</span>
+            <div class="slide-brand-mark"><span class="dot"></span> Rumah Makan Kulu Asri</div>
+        </div>
+        <div class="slide-body">
+            <div class="cover-grid">
+                <div>
+                    <span class="eyebrow"><i class="bi bi-diagram-3-fill"></i> Dual-Channel F&amp;B Ecosystem</span>
+                    <h1 class="cover-title">POS <span class="accent">Kulu Asri</span></h1>
+                    <p class="cover-tagline">"Jagonya Ikan Bakar!" &mdash; Resto Management &amp; QR Self-Order</p>
+                    <p class="h-subtitle">
+                        Platform manajemen restoran terintegrasi yang menggabungkan Terminal Kasir POS berkecepatan tinggi, pemesanan mandiri pelanggan via QR Meja, serta analitik laba rugi &amp; audit anti-fraud secara real-time.
+                    </p>
+                    <div class="tech-pills">
+                        <span class="tech-pill"><i class="bi bi-filetype-php"></i> Laravel 12 &amp; PHP 8.2</span>
+                        <span class="tech-pill"><i class="bi bi-bootstrap-fill"></i> Bootstrap 5.3</span>
+                        <span class="tech-pill"><i class="bi bi-graph-up"></i> Chart.js 4</span>
+                        <span class="tech-pill"><i class="bi bi-qr-code"></i> QR Self-Order</span>
+                        <span class="tech-pill"><i class="bi bi-database"></i> SQLite / MySQL</span>
+                    </div>
+                </div>
+                <div class="cover-showcase">
+                    <div class="browser-frame cover-desktop">
+                        <div class="browser-bar">
+                            <span class="browser-dot red"></span>
+                            <span class="browser-dot yellow"></span>
+                            <span class="browser-dot green"></span>
+                            <span class="browser-url">kuluasri.pos/pos</span>
+                        </div>
+                        <img src="screenshots/06-pos-kasir-terminal.png" alt="POS Kasir Terminal">
+                    </div>
+                    <div class="phone-frame cover-mobile">
+                        <img src="screenshots/08-customer-qr-self-order-mobile.png" alt="Mobile QR Order">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>github.com/ipankexe/pos-kulu-asri</span>
+            <span>Slide 01 / 10</span>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: PROBLEM & ARCHITECTURE -->
+    <section class="slide">
+        <div class="slide-header">
+            <span class="eyebrow"><i class="bi bi-lightbulb-fill"></i> Latar Belakang &amp; Arsitektur Sistem</span>
+            <div class="slide-brand-mark"><span class="dot"></span> POS Kulu Asri</div>
+        </div>
+        <div class="slide-body">
+            <div class="grid-2">
+                <div>
+                    <h2 class="h-title">Menjawab Tantangan Operasional <span class="accent">Restoran Ramai</span></h2>
+                    <p class="h-subtitle">Dirancang untuk memangkas antrean jam sibuk, menghilangkan selisih kasir, dan memberi visibilitas finansial instan kepada pemilik usaha.</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon flame"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                            <div>
+                                <h4>Masalah Sebelumnya</h4>
+                                <p>Pencatatan manual memperlambat servis saat jam makan siang, rawan selisih stok/kas, dan sulit memantau margin bersih harian.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="bi bi-check2-circle"></i></div>
+                            <div>
+                                <h4>Solusi Dual-Channel Order</h4>
+                                <p>Pesanan kasir langsung dan pesanan QR pelanggan masuk ke satu antrean dapur &amp; buku besar yang tersinkronisasi otomatis.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-strip">
+                        <div class="stat-box">
+                            <div class="num">3 Role</div>
+                            <div class="lbl">Admin, Kasir, Tamu</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="num">2 Kanal</div>
+                            <div class="lbl">POS &amp; QR Self-Order</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="num">100%</div>
+                            <div class="lbl">Audit Trail &amp; HPP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card highlight">
+                    <div class="arch-diagram">
+                        <div class="arch-row">
+                            <div class="arch-node">
+                                <h4 style="color:#fcd34d; font-size:14px; margin-bottom:4px;"><i class="bi bi-display"></i> Terminal POS Kasir</h4>
+                                <p style="font-size:12px; color:#cbd5e1;">Pelayanan counter, hold bill meja, checkout Cash/QRIS &amp; cetak struk 58/80mm.</p>
+                            </div>
+                            <div class="arch-node">
+                                <h4 style="color:#6ee7b7; font-size:14px; margin-bottom:4px;"><i class="bi bi-phone"></i> Customer QR Meja</h4>
+                                <p style="font-size:12px; color:#cbd5e1;">Scan QR unik per meja, pilih menu dari browser HP tanpa instal aplikasi.</p>
+                            </div>
+                        </div>
+                        <div class="arch-arrow"><i class="bi bi-arrow-down-circle-fill"></i></div>
+                        <div class="arch-node center">
+                            <h4 style="color:#fff; font-size:15px; margin-bottom:4px;"><i class="bi bi-cpu-fill"></i> Core Engine (Laravel 12 MVC + Role Middleware)</h4>
+                            <p style="font-size:12px; color:#d1fae5;">Sinkronisasi Status Dapur &bull; Pengurangan Stok Atomik &bull; Webhook Pembayaran &bull; Void Audit Log</p>
+                        </div>
+                        <div class="arch-arrow"><i class="bi bi-arrow-down-circle-fill"></i></div>
+                        <div class="arch-node">
+                            <h4 style="color:#fcd34d; font-size:14px; margin-bottom:4px;"><i class="bi bi-bar-chart-line-fill"></i> Executive Admin Dashboard &amp; Reporting</h4>
+                            <p style="font-size:12px; color:#cbd5e1;">Komparasi omset DoD &amp; MoM, estimasi Laba Bersih (Omset - HPP), Top 5 Menu, Export Excel &amp; PDF.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Arsitektur Dual-Channel POS &amp; QR Self-Order</span>
+            <span>Slide 02 / 10</span>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: AUTH & BRAND IDENTITY -->
+    <section class="slide">
+        <div class="slide-header">
+            <span class="eyebrow"><i class="bi bi-shield-lock-fill"></i> Security &amp; Brand Experience</span>
+            <div class="slide-brand-mark"><span class="dot"></span> Halaman Login Terpadu</div>
+        </div>
+        <div class="slide-body">
+            <div class="grid-split-wide">
+                <div>
+                    <h2 class="h-title">Akses Aman Berbasis <span class="accent">Peran (RBAC)</span></h2>
+                    <p class="h-subtitle">Gerbang masuk tunggal yang memisahkan hak akses operasional kasir dan analitik manajemen secara ketat.</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="bi bi-person-badge-fill"></i></div>
+                            <div>
+                                <h4>Auto-Redirect Sesuai Role</h4>
+                                <p>Akun Administrator diarahkan ke Executive Dashboard, sementara akun Kasir langsung masuk ke Terminal POS siap pakai.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon amber"><i class="bi bi-palette-fill"></i></div>
+                            <div>
+                                <h4>Design System Nusantara</h4>
+                                <p>Menggunakan palet Botanical Emerald &amp; Honey Amber dengan tipografi Plus Jakarta Sans &amp; Playfair Display.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon flame"><i class="bi bi-lock-fill"></i></div>
+                            <div>
+                                <h4>Middleware Route Protection</h4>
+                                <p>Setiap endpoint Admin, Kasir, hingga token QR Meja dilindungi middleware otorisasi dan rate limiter.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="browser-frame">
+                    <div class="browser-bar">
+                        <span class="browser-dot red"></span>
+                        <span class="browser-dot yellow"></span>
+                        <span class="browser-dot green"></span>
+                        <span class="browser-url">http://127.0.0.1:8000/login</span>
+                    </div>
+                    <img src="screenshots/01-login.png" alt="Halaman Login POS Kulu Asri">
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Autentikasi &amp; Identitas Visual RM Kulu Asri</span>
+            <span>Slide 03 / 10</span>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: POS KASIR TERMINAL -->
+    <section class="slide">
+        <div class="slide-header">
+            <span class="eyebrow amber"><i class="bi bi-cash-coin"></i> Fitur Utama #1 &mdash; Front-of-House</span>
+            <div class="slide-brand-mark"><span class="dot"></span> Terminal POS Kasir</div>
+        </div>
+        <div class="slide-body">
+            <div class="grid-split-wide-rev">
+                <div class="browser-frame">
+                    <div class="browser-bar">
+                        <span class="browser-dot red"></span>
+                        <span class="browser-dot yellow"></span>
+                        <span class="browser-dot green"></span>
+                        <span class="browser-url">http://127.0.0.1:8000/pos</span>
+                    </div>
+                    <img src="screenshots/06-pos-kasir-terminal.png" alt="Terminal POS Kasir">
+                </div>
+                <div>
+                    <h2 class="h-title">Terminal Kasir <span class="accent">Cepat &amp; Ergonomis</span></h2>
+                    <p class="h-subtitle">Antarmuka layar sentuh yang dirancang untuk kecepatan input pesanan dan minim kesalahan saat jam sibuk.</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="bi bi-grid-fill"></i></div>
+                            <div>
+                                <h4>Filter Kategori &amp; Pencarian Instan</h4>
+                                <p>Navigasi puluhan menu ikan bakar, ayam, hingga minuman dengan pill kategori responsif dan live search.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon amber"><i class="bi bi-receipt"></i></div>
+                            <div>
+                                <h4>Manajemen Meja &amp; Hold Order</h4>
+                                <p>Simpan pesanan terbuka per meja (mis. Patin 1), catat request bumbu dapur, lalu proses bayar kapan saja.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon flame"><i class="bi bi-bell-fill"></i></div>
+                            <div>
+                                <h4>Sinkronisasi Pesanan QR Masuk</h4>
+                                <p>Pesanan self-order pelanggan muncul langsung di panel kasir untuk konfirmasi pembayaran &amp; antrean dapur.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Terminal Kasir POS &bull; Optimasi Layar Sentuh</span>
+            <span>Slide 04 / 10</span>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: CUSTOMER QR SELF-ORDER -->
+    <section class="slide">
+        <div class="slide-header">
+            <span class="eyebrow"><i class="bi bi-qr-code-scan"></i> Fitur Utama #2 &mdash; Mobile Self-Order</span>
+            <div class="slide-brand-mark"><span class="dot"></span> Pengalaman Pelanggan</div>
+        </div>
+        <div class="slide-body">
+            <div class="grid-split-wide">
+                <div>
+                    <h2 class="h-title">Pemesanan Mandiri <span class="accent">Via QR Meja</span></h2>
+                    <p class="h-subtitle">Pelanggan cukup memindai kode QR di meja untuk melihat menu visual, memesan langsung, dan melacak status hidangan.</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="bi bi-1-circle-fill"></i></div>
+                            <div>
+                                <h4>Tanpa Instalasi Aplikasi (Web-Based)</h4>
+                                <p>URL bertoken unik per meja otomatis mengenali nomor meja pelanggan (contoh: Meja Patin 1) dengan validasi keamanan.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon amber"><i class="bi bi-2-circle-fill"></i></div>
+                            <div>
+                                <h4>Mobile-First UI &amp; Floating Cart</h4>
+                                <p>Tampilan responsif 390px dengan bilah keranjang melayang yang menampilkan ringkasan item dan total harga real-time.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon flame"><i class="bi bi-3-circle-fill"></i></div>
+                            <div>
+                                <h4>Pelacakan Status &amp; Pembayaran Fleksibel</h4>
+                                <p>Mendukung bayar di kasir atau pembayaran digital/webhook dengan halaman status antrean pesanan langsung.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phone-wrap">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <img src="screenshots/08-customer-qr-self-order-mobile.png" alt="Customer Self Order QR Mobile">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Customer Self-Order &bull; Tampilan Mobile 390&times;844</span>
+            <span>Slide 05 / 10</span>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: POS HISTORY, VOID & PRINTING -->
+    <section class="slide">
+        <div class="slide-header">
+            <span class="eyebrow amber"><i class="bi bi-clock-history"></i> Fitur Utama #3 &mdash; Transparansi Kasir</span>
+            <div class="slide-brand-mark"><span class="dot"></span> Riwayat &amp; Audit Transaksi</div>
+        </div>
+        <div class="slide-body">
+            <div class="grid-split-wide-rev">
+                <div class="browser-frame">
+                    <div class="browser-bar">
+                        <span class="browser-dot red"></span>
+                        <span class="browser-dot yellow"></span>
+                        <span class="browser-dot green"></span>
+                        <span class="browser-url">http://127.0.0.1:8000/pos/history</span>
+                    </div>
+                    <img src="screenshots/07-pos-riwayat-transaksi.png" alt="Riwayat Transaksi Kasir">
+                </div>
+                <div>
+                    <h2 class="h-title">Riwayat Terpusat, <span class="accent">Void &amp; Cetak Struk</span></h2>
+                    <p class="h-subtitle">Rekap harian kasir yang memisahkan pendapatan per kanal dan menjaga akuntabilitas setiap transaksi.</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="bi bi-funnel-fill"></i></div>
+                            <div>
+                                <h4>Pemisahan Omset Omnichannel</h4>
+                                <p>Menampilkan kontribusi omset dari POS Kasir vs QR Self-Order beserta rincian metode pembayaran (Cash/QRIS).</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon amber"><i class="bi bi-printer-fill"></i></div>
+                            <div>
+                                <h4>Cetak Struk &amp; Tiket Dapur 58/80mm</h4>
+                                <p>Cetak ulang struk pelanggan maupun tiket pesanan dapur kapan pun dibutuhkan langsung dari tabel riwayat.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon flame"><i class="bi bi-shield-exclamation"></i></div>
+                            <div>
+                                <h4>Kontrol Void &amp; Rekap Tutup Toko (EOD)</h4>
+                                <p>Pembatalan transaksi mewajibkan alasan dan dicatat ke log audit, dilengkapi laporan tutup kasir End-of-Day.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Audit Transaksi, Thermal Receipt &amp; Kitchen Ticket</span>
+            <span>Slide 06 / 10</span>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: ADMIN DASHBOARD & ANALYTICS -->
+    <section class="slide">
+        <div class="slide-header">
+            <span class="eyebrow"><i class="bi bi-graph-up-arrow"></i> Fitur Utama #4 &mdash; Executive Intelligence</span>
+            <div class="slide-brand-mark"><span class="dot"></span> Admin Dashboard</div>
+        </div>
+        <div class="slide-body">
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:14px;">
+                    <div>
+                        <h2 class="h-title">Dashboard Analitik <span class="accent">Real-Time &amp; Laba Rugi</span></h2>
+                        <p class="h-subtitle" style="margin-top:4px;">Pemantauan KPI bisnis, perbandingan pertumbuhan DoD/MoM, tren grafik Chart.js, hingga estimasi margin bersih.</p>
+                    </div>
+                </div>
+                <div class="dual-frames">
+                    <div class="browser-frame">
+                        <div class="browser-bar">
+                            <span class="browser-dot red"></span><span class="browser-dot yellow"></span><span class="browser-dot green"></span>
+                            <span class="browser-url">/admin/dashboard &mdash; KPI &amp; Perbandingan</span>
+                        </div>
+                        <img src="screenshots/02-admin-dashboard-top.png" alt="Admin Dashboard KPI">
+                        <div class="frame-caption">
+                            <span>KPI Omset, Kanal &amp; Pertumbuhan DoD/MoM</span>
+                            <span class="badge">Live Metrics</span>
+                        </div>
+                    </div>
+                    <div class="browser-frame">
+                        <div class="browser-bar">
+                            <span class="browser-dot red"></span><span class="browser-dot yellow"></span><span class="browser-dot green"></span>
+                            <span class="browser-url">/admin/dashboard &mdash; Chart &amp; Laba Rugi</span>
+                        </div>
+                        <img src="screenshots/02b-admin-dashboard-analytics.png" alt="Admin Dashboard Analytics">
+                        <div class="frame-caption">
+                            <span>Tren Grafik 7 Hari, HPP &amp; Top 5 Menu Terlaris</span>
+                            <span class="badge">Chart.js + Net Profit</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Executive Analytics &bull; Kalkulasi HPP &amp; Margin Otomatis</span>
+            <span>Slide 07 / 10</span>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: PRODUCTS & TABLES QR MANAGEMENT -->
+    <section class="slide">
+        <div class="slide-header">
+            <span class="eyebrow amber"><i class="bi bi-sliders"></i> Fitur Utama #5 &mdash; Back-Office Operations</span>
+            <div class="slide-brand-mark"><span class="dot"></span> Manajemen Katalog &amp; Meja QR</div>
+        </div>
+        <div class="slide-body">
+            <div>
+                <div style="margin-bottom:14px;">
+                    <h2 class="h-title">Kontrol Menu, HPP Stok &amp; <span class="accent">Generator QR Meja</span></h2>
+                    <p class="h-subtitle" style="margin-top:4px;">Kelola ratusan item menu beserta harga modalnya, sekaligus kendali penuh aktivasi dan regenerasi token QR tiap meja.</p>
+                </div>
+                <div class="dual-frames">
+                    <div class="browser-frame">
+                        <div class="browser-bar">
+                            <span class="browser-dot red"></span><span class="browser-dot yellow"></span><span class="browser-dot green"></span>
+                            <span class="browser-url">/admin/products</span>
+                        </div>
+                        <img src="screenshots/03-admin-products.png" alt="Manajemen Produk dan Stok">
+                        <div class="frame-caption">
+                            <span>Katalog Produk, HPP, Harga Jual &amp; Peringatan Stok</span>
+                            <span class="badge">Inventory Control</span>
+                        </div>
+                    </div>
+                    <div class="browser-frame">
+                        <div class="browser-bar">
+                            <span class="browser-dot red"></span><span class="browser-dot yellow"></span><span class="browser-dot green"></span>
+                            <span class="browser-url">/admin/tables</span>
+                        </div>
+                        <img src="screenshots/04-admin-tables-qr.png" alt="Kelola Meja dan QR Code">
+                        <div class="frame-caption">
+                            <span>Status Meja, Toggle QR Aktif, Regenerate &amp; Cetak QR</span>
+                            <span class="badge">Dynamic QR Token</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Manajemen Inventori Menu &amp; QR Code Meja Dinamis</span>
+            <span>Slide 08 / 10</span>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: REPORTS & EXPORT -->
+    <section class="slide">
+        <div class="slide-header">
+            <span class="eyebrow"><i class="bi bi-file-earmark-spreadsheet-fill"></i> Fitur Utama #6 &mdash; Financial Reporting</span>
+            <div class="slide-brand-mark"><span class="dot"></span> Laporan &amp; Ekspor Data</div>
+        </div>
+        <div class="slide-body">
+            <div class="grid-split-wide">
+                <div>
+                    <h2 class="h-title">Laporan Transaksi &amp; <span class="accent">Ekspor Excel / PDF</span></h2>
+                    <p class="h-subtitle">Mempermudah pembukuan harian dan bulanan manajemen dengan filter riwayat lengkap dan ekspor siap cetak.</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="bi bi-calendar-range"></i></div>
+                            <div>
+                                <h4>Filter Periode &amp; Kanal Penjualan</h4>
+                                <p>Telusuri transaksi berdasarkan rentang waktu, kasir/pemesan, nama meja, hingga status pembayaran.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon amber"><i class="bi bi-file-earmark-excel-fill"></i></div>
+                            <div>
+                                <h4>One-Click Export Excel &amp; PDF</h4>
+                                <p>Unduh rekapitulasi penjualan ke format spreadsheet atau dokumen PDF resmi untuk arsip keuangan.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon flame"><i class="bi bi-journal-check"></i></div>
+                            <div>
+                                <h4>Terhubung dengan Void Audit Logs</h4>
+                                <p>Menjamin seluruh transaksi batal tercatat transparan dan terpisah dari perhitungan omset sah.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="browser-frame">
+                    <div class="browser-bar">
+                        <span class="browser-dot red"></span>
+                        <span class="browser-dot yellow"></span>
+                        <span class="browser-dot green"></span>
+                        <span class="browser-url">http://127.0.0.1:8000/admin/reports</span>
+                    </div>
+                    <img src="screenshots/05-admin-reports.png" alt="Laporan Transaksi Admin">
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Laporan Keuangan Terpadu &bull; Export Excel &amp; PDF</span>
+            <span>Slide 09 / 10</span>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: TECH STACK & CTA -->
+    <section class="slide">
+        <div class="slide-header">
+            <span class="eyebrow amber"><i class="bi bi-code-slash"></i> Ringkasan Teknis &amp; Tautan Proyek</span>
+            <div class="slide-brand-mark"><span class="dot"></span> Engineering Highlights</div>
+        </div>
+        <div class="slide-body">
+            <div>
+                <h2 class="h-title">Dibangun dengan Arsitektur <span class="accent">Modern &amp; Terstruktur</span></h2>
+                <p class="h-subtitle">Mengutamakan keandalan transaksi, keamanan akses, serta pengalaman pengguna lintas perangkat (desktop, tablet &amp; mobile).</p>
+
+                <div class="stack-grid">
+                    <div class="stack-card">
+                        <h4><i class="bi bi-layers-fill"></i> Laravel 12 MVC</h4>
+                        <p>Pemisahan controller Admin, POS, Customer QR, serta webhook pembayaran dengan Eloquent ORM dan migrasi terstruktur.</p>
+                    </div>
+                    <div class="stack-card">
+                        <h4><i class="bi bi-shield-check"></i> Keamanan &amp; Audit</h4>
+                        <p>Role middleware (admin / kasir), proteksi rate-limit pada checkout QR publik, serta pencatatan Void Audit &amp; StockLog.</p>
+                    </div>
+                    <div class="stack-card">
+                        <h4><i class="bi bi-palette2"></i> 3-Layer Design Tokens</h4>
+                        <p>Token warna, tipografi, dan radius terpusat (design-tokens.css) yang menjaga konsistensi UI Admin, Kasir &amp; QR Menu.</p>
+                    </div>
+                    <div class="stack-card">
+                        <h4><i class="bi bi-bar-chart-fill"></i> AJAX &amp; Chart.js 4</h4>
+                        <p>Grafik komparasi tren penjualan dinamis (7 hari / bulanan) tanpa reload halaman penuh.</p>
+                    </div>
+                    <div class="stack-card">
+                        <h4><i class="bi bi-printer"></i> Thermal Ready</h4>
+                        <p>Template struk kasir, tiket dapur, cetak QR meja, dan laporan EOD siap cetak di printer thermal 58mm/80mm.</p>
+                    </div>
+                    <div class="stack-card">
+                        <h4><i class="bi bi-phone-fill"></i> Mobile-First QR Order</h4>
+                        <p>Pengalaman self-order tanpa instalasi aplikasi untuk pelanggan restoran, terhubung real-time ke kasir.</p>
+                    </div>
+                </div>
+
+                <div class="cta-banner">
+                    <div>
+                        <h3 style="font-size:18px; font-weight:800; color:#fff;">Tertarik melihat kode sumber &amp; detail implementasinya?</h3>
+                        <p style="font-size:12.5px; color:#d1fae5; margin-top:4px;">Seluruh source code, seeder menu demo, dokumentasi brand, dan panduan instalasi tersedia di GitHub.</p>
+                    </div>
+                    <div class="cta-links">
+                        <a class="cta-pill" href="https://github.com/ipankexe/pos-kulu-asri" target="_blank">
+                            <i class="bi bi-github"></i> github.com/ipankexe/pos-kulu-asri
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Terima kasih telah melihat portofolio POS Kulu Asri</span>
+            <span>Slide 10 / 10</span>
+        </div>
+    </section>
+
+</div>
+
+<div class="nav-controls">
+    <button class="nav-btn" onclick="prevSlide()" title="Sebelumnya"><i class="bi bi-arrow-left"></i></button>
+    <span class="slide-counter"><span id="current">1</span> / <span id="total">10</span></span>
+    <button class="nav-btn" onclick="nextSlide()" title="Berikutnya"><i class="bi bi-arrow-right"></i></button>
+</div>
+
+<script>
+    let current = 1;
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    document.getElementById('total').textContent = total;
+
+    function showSlide(n) {
+        if (n < 1) n = 1;
+        if (n > total) n = total;
+        current = n;
+        slides.forEach((s, i) => s.classList.toggle('active', i === n - 1));
+        document.getElementById('current').textContent = n;
+        document.getElementById('progressBar').style.width = ((n / total) * 100) + '%';
+    }
+
+    function nextSlide() { showSlide(current + 1); }
+    function prevSlide() { showSlide(current - 1); }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            e.preventDefault();
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            prevSlide();
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-controls') && !e.target.closest('.top-actions') && !e.target.closest('a')) {
+            nextSlide();
+        }
+    });
+
+    showSlide(1);
+</script>
+</body>
+</html>
